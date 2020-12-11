@@ -1,0 +1,39 @@
+<?xml version="0.0" ?>
+<robot name="case_sig_ring">
+
+  <link name="world"/>
+
+  <link name="case_sig_ring_link">
+    <inertial>
+      <mass value="0.8"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="plate_3.STL" scale="0.0015 0.002 0.0015 "/>
+      </geometry>
+      <material name="sig">
+        <color rgba="0.8 0.8 0.8 1"/>
+      </material>
+    </visual>
+
+    <collision concave="yes">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+
+        <mesh filename="plate_3.STL" scale="0.0015 0.002 0.0015 "/>
+<!--        <mesh filename="plate_2.STL" scale="0.0015 0.002 0.0015 "/>-->
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="connect_root_and_world" type="fixed">
+    <child link="case_sig_ring_link"/>
+    <parent link="world"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+
+</robot>

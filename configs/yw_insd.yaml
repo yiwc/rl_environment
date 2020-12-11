@@ -1,0 +1,33 @@
+# Reward Shaping
+max_reward_ee_xy: [0.309, 0.406] #[0.30801931 0.40454441]
+
+
+img_size: [128, 128]
+
+# camera 1
+fov: 19
+camera_shitft_xyz: [0.04,0.1,0.07] # red green blue
+#camera_shift_rpy: [0,2,3] # _ pitch _
+# camera 2
+fov2: 19
+camera_shitft_xyz2: [-0.04,0.1,0.07]
+#camera_shift_rpy_2: [0,2,2.7]
+
+
+# Motion
+z_default_vel: 0.03 # 0.02
+action_default_vel_scale: 1 #
+
+# Done
+casecoli_done: 15 # Done after already colids case x steps
+
+# robot
+
+# object
+
+# camera
+
+# gym
+action_low: -1
+action_high: 1
+action_len: 2
