@@ -128,8 +128,11 @@ class TimeStep(object):
 class PandaSim(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("the simulator has closed!")
-    def __init__(self, bullet_client,Task,args):
+    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment"):
         print("YOURTASK=",Task)
+
+        self.root_folder_name=root_folder_name
+
         self.timestep=TimeStep(sim=self)
         self.temp_timestep=TimeStep(sim=self)
         self.pyb=bullet_client
@@ -639,7 +642,7 @@ class PandaSim(object):
             for img in self.bg_imglist]
     def _get_model_rootdir(self):
         dir=os.getcwd()
-        dirs=["pybullet_env","my_robots","my_models"]
+        dirs=[self.root_folder_name,"my_robots","my_models"]
         for d in dirs:
             if(d not in dir.__str__()):
                 dir=os.path.join(dir,d)
