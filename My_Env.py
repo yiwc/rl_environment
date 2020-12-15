@@ -72,8 +72,11 @@ class yw_robotics_env(gym.Env):
         # if "yw_insd" in task:
         yaml_name="yw_insd" if "yw_insd" in task else task
 
-        self.args = yaml.load(open(os.path.join(base_dir, "configs/"+yaml_name+".yaml"), 'r'), yaml.Loader)
-        self.args = namedtuple('arg', self.args.keys())(**self.args)
+        try:
+            self.args = yaml.load(open(os.path.join(base_dir, "configs/"+yaml_name+".yaml"), 'r'), yaml.Loader)
+            self.args = namedtuple('arg', self.args.keys())(**self.args)
+        except:
+            self.args= None
 
         self.createVideo = 0
         fps = 240
@@ -123,9 +126,10 @@ class yw_robotics_env(gym.Env):
         pass
 
         # gym
-        self.observation_space = spaces.Box(0, 255, shape=(*self.args.img_size, 3), dtype='float32')
-        self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
-        self.viewer = None
+        if self.args is not None:
+            self.observation_space = spaces.Box(0, 255, shape=(*self.args.img_size, 3), dtype='float32')
+            self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
+            self.viewer = None
 
 
     def step(self,action):
@@ -236,7 +240,12 @@ if __name__=="__main__":
     # env1 = yw_robotics_env("yw_insert_g1bimg", DIRECT=0)
     # env1 = yw_robotics_env("yw_insd_v7", DIRECT=0)
     # env1 = yw_robotics_env("yw_insd_v13", DIRECT=0)
-    taskname="yw_insd_v10"
+    # taskname="yw_insert_g1cimg"
+    taskname="yw_insert_v4img3cm"
+    taskname="yw_insert_g1cimg"
+    taskname="yw_insd_v11"
+    taskname="yw_insd_v14"
+    # taskname="yw_reach_v1img"
     env1 = yw_robotics_env(taskname, DIRECT=0)
 
     loop=0
@@ -246,9 +255,13 @@ if __name__=="__main__":
         loop+=1
         # print(loop)
         action = actor.get_action()
-        # action=[0,1] # +1up -1 down, +1 right, -1 leftconda install libpn
-        # action = np.random.uniform(-1,1,[2])
-        obs, rew, done, info=env1.step(action[0:2]) # env1.step(np.random.random([2])-0.3)
+        # kuka
+        # action = list(np.random.uniform(-1,1,7))
+        obs, rew, done, info=env1.step(action) # env1.step(np.random.random([2])-0.3)
+
+        ##insert
+        # action = actor.get_action()
+        # obs, rew, done, info=env1.step(action[0:2]) # env1.step(np.random.random([2])-0.3)
 
         ret+=rew
         if(done):
