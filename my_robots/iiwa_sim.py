@@ -1122,14 +1122,14 @@ class yw_insert_v1img3cm(base_task):
                 return 1
     def _reward(self):
         # Success Reward
-        success = self._task_success()
+       # success = self._task_success()
         pos_gripper = np.array(list(self.get_end_effect_pose(jacoEndEffectorIndex)))[:2]
         target_pos = np.array(self.args.max_reward_ee_xy)
         dist = np.linalg.norm(pos_gripper - target_pos)
         align_reward = -80 * dist + 1
-        reward = float(success) + align_reward
-        if (success):
-            pass
+        reward = align_reward #float(success) +
+        # if (success):
+        #     pass
 
         return float(reward)
 
