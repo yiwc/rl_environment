@@ -127,9 +127,10 @@ class TimeStep(object):
 class PandaSim(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("the simulator has closed!")
-    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment"):
+    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment",gan_srvs=1):
         print("YOURTASK=",Task)
 
+        self.gan_srvs=gan_srvs
         self.root_folder_name=root_folder_name
 
         self.Task = Task
@@ -244,7 +245,7 @@ class PandaSim(object):
             self.steps+=1
         step_t(self)
 
-        print(self.steps)
+        # print(self.steps)
 
         self.taskobj._apply_action_to_sim(action)
         self.action=action[:]
@@ -342,13 +343,16 @@ class PandaSim(object):
 
         steps=self.steps
         file_dir_path=os.path.join("game_saves",self.Task,"buffer")
+
+        os.makedirs(file_dir_path,exist_ok=True)
+
         # assert
 
         # shutil.rmtree(file_dir_path)
         # os.mkdir(file_dir_path) # clean the buffer
-        if(not os.path.exists(file_dir_path)):
-
-            os.mkdir(file_dir_path) # clean the buffer
+        # if(not os.path.exists(file_dir_path)):
+        #
+        #     os.mkdir(file_dir_path) # clean the buffer
             # raise NotImplemented("Sorry, pls create the dir mannually~")
 
         file_path=os.path.join(file_dir_path,str(steps)+"")
@@ -581,38 +585,37 @@ class PandaSim(object):
 
     # GAN
     def _init_GAN(self):
-        # gpus = tf.config.experimental.list_physical_devices('GPU')
-        # if gpus:
-        #     try:
-        #         # Currently, memory growth needs to be the same across GPUs
-        #         for gpu in gpus:
-        #             tf.config.experimental.set_memory_growth(gpu, True)
-        #         logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-        #         print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-        #     except RuntimeError as e:
-        #         print(e)
-        # print("   _init_GAN")
-        # print("   Keras Loaded")
-        # gab_name = "model_gAB_insert_clean_v2_arc_a0_54"
-        # gba_name = "model_gBA_insert_clean_v2_arc_a0_54"
-        # _objd = {'InstanceNormalization': InstanceNormalization}
-        # self.Gab = load_model(os.path.join(self._get_x_rootdir("GAN_models"), gab_name), custom_objects=_objd)
-        # print("   Gab Model loaded")
-        # self.Gba = load_model(os.path.join(self._get_x_rootdir("GAN_models"), gba_name), custom_objects=_objd)
-        # print("   Gba Model loaded")
-        # pass
         self.context = zmq.Context()
-        self.sab = self.context.socket(zmq.REQ)
-        self.sab.connect("tcp://localhost:5600")
-        self.sba = self.context.socket(zmq.REQ)
-        self.sba.connect("tcp://localhost:5601")
+
+        self.sabs=[]
+        self.sbas=[]
+        ptab=5600
+        ptba=5601
+        for i in range(self.gan_srvs):
+            q=self.context.socket(zmq.REQ)
+            q.connect("tcp://localhost:"+str(ptab))
+            self.sabs.append(q)
+            q=self.context.socket(zmq.REQ)
+            q.connect("tcp://localhost:"+str(ptba))
+            self.sbas.append(q)
+            ptab+=2
+            ptba+=2
+
+        # self.sab =
+        # self.sab.connect("tcp://localhost:5600")
+        # self.sba = self.context.socket(zmq.REQ)
+        # self.sba.connect("tcp://localhost:5601")
+
+
     def gan_gen(self, img, ab):
         # img=np.ones([128,128,3])
         assert ab in ["ab", "ba"]
         if ab == "ab":
-            skt = self.sab
+            # skt = self.sab
+            skt=random.choice(self.sabs)
         else:
-            skt = self.sba
+            skt=random.choice(self.sbas)
+            # skt = self.sba
         img = img.astype(float)
         skt.send(img.tobytes())
         message = skt.recv()
@@ -967,7 +970,7 @@ class yw_pick_v1(base_task):
 
     def _terminal(self):
         done=0
-        if self._terminal_maxsteps():
+        if self._terminal_of_maxsteps():
             return 1
         if self._table_collied():
             done=1
@@ -2509,6 +2512,14 @@ class yw_insd(yw_insert_v1img3cm):
         # elif
 
 
+#Task3: Sparse Reward Envs
+class sparse1(yw_insert_v1img3cm):
+    def __init__(self,env):
+        super(sparse1, self).__init__(env)
+
+    def get_observe_dict(self):
+        observe=super(sparse1, self)._observe()
+        return {"image":observe}
 if __name__=="__main__":
     env="None"
     a=yw_pick_v1(env)

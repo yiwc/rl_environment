@@ -167,6 +167,7 @@ class yw_robotics_env(gym.Env):
     def __getattr__(self, name):
         return getattr(self.Env, name)
 
+
 def show_exp(task,expid):
     task = task
     env1 = yw_robotics_env(task, DIRECT=0)
@@ -192,6 +193,7 @@ def show_exp(task,expid):
         print("结束")
         time.sleep(1)
 
+
 def show_save_id_reverse(task,expid):
     task = task
     env1 = yw_robotics_env(task, DIRECT=0)
@@ -205,6 +207,7 @@ def show_save_id_reverse(task,expid):
 
         print("结束")
         time.sleep(1)
+
 def copy_1_to_0(task):
     path_root=os.path.join(os.getcwd(),"game_saves",task)
     for expid in os.listdir(path_root):
@@ -220,6 +223,8 @@ class img_save(object):
         img=cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
         cv2.imwrite("z_imgs/"+str(self.img_counter)+".png",img)
         self.img_counter+=1
+
+
 if __name__=="__main__":
     # show_exp("yw_reach_v1img",expid="ALL") #0 1
     # show_save_id_reverse("yw_reach_v1img",expid=14)
@@ -243,7 +248,7 @@ if __name__=="__main__":
     # taskname="yw_insert_g1cimg"
     taskname="yw_insert_v4img3cm"
     taskname="yw_insert_g1cimg"
-    taskname="yw_insd_v1"
+    taskname="yw_insd_v14"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
     # taskname="yw_reach_v1img"
@@ -274,7 +279,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        env1.render()
+        # env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":
