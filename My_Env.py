@@ -62,7 +62,7 @@ class xbox_actor(object):
 class yw_robotics_env(gym.Env):
     # combine Pybullet Configs and IIWASIM together
 
-    def __init__(self,task,DIRECT=1,exp_recording=0):
+    def __init__(self,task,DIRECT=1,exp_recording=0,**kwargs):
         import pybullet as p
         import pybullet_utils.bullet_client as bc
 
@@ -112,7 +112,7 @@ class yw_robotics_env(gym.Env):
         p0.setGravity(0, -9.8, 0)
 
         self.p0=p0
-        self.Env = iiwa_sim.PandaSim(p0, task, self.args)
+        self.Env = iiwa_sim.PandaSim(p0, task, self.args,**kwargs)
         self.Env.control_dt = self.dt
         self.Env.expid = expid
         self.Env.exp_recording = exp_recording
@@ -252,7 +252,7 @@ if __name__=="__main__":
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
     # taskname="yw_reach_v1img"
-    env1 = yw_robotics_env(taskname, DIRECT=0)
+    env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4)
 
     loop=0
     # action=[0,0]
@@ -279,7 +279,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        # env1.render()
+        env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":
