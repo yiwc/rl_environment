@@ -243,8 +243,9 @@ if __name__=="__main__":
     # taskname="yw_insert_g1cimg"
     taskname="yw_insert_v4img3cm"
     taskname="yw_insert_g1cimg"
-    taskname="yw_insd_v11"
-    taskname="yw_insd_v14"
+    taskname="yw_insd_v1"
+    # taskname="yw_insd_v10"
+    # taskname="yw_insd_v14"
     # taskname="yw_reach_v1img"
     env1 = yw_robotics_env(taskname, DIRECT=0)
 
@@ -262,7 +263,7 @@ if __name__=="__main__":
         ##insert
         # action = actor.get_action()
         # obs, rew, done, info=env1.step(action[0:2]) # env1.step(np.random.random([2])-0.3)
-
+        # print(stps)
         ret+=rew
         if(done):
             print("ret=",ret," || avret=",ret/loop)

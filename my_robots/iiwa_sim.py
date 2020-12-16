@@ -244,12 +244,16 @@ class PandaSim(object):
             self.steps+=1
         step_t(self)
 
+        print(self.steps)
+
         self.taskobj._apply_action_to_sim(action)
         self.action=action[:]
         self.bullet_client.stepSimulation()
         self.timestep.load()
         self.Task_Success_Updated=0
         done=self.timestep.get_done()
+
+        # print(self.detect_coli_case)
 
         if(done):
             if(self.exp_recording):
@@ -1117,7 +1121,7 @@ class yw_insert_v1img3cm(base_task):
         if self._terminal_of_maxsteps():
             return 1
         if (self.detect_coli(self.my_items["case"][0])):
-            self.detect_coli_case += 1
+            self.e.detect_coli_case += 1
             if (self.detect_coli_case > self.args.casecoli_done):
                 return 1
     def _reward(self):
@@ -2025,7 +2029,7 @@ class yw_insd(yw_insert_v1img3cm):
 
 
         level = self.l
-        if level in [11, 12,14]:
+        if level in [11, 12,14,15]:
             self._init_GAN()
         self.e.maxsteps = 40
         self.e.images = [None, None]
@@ -2049,6 +2053,10 @@ class yw_insd(yw_insert_v1img3cm):
         # self.debug_b2 = self.p.addUserDebugParameter("b2", 0, 1, 0.82)
         # self.debug_b3 = self.p.addUserDebugParameter("b3", -2, -1, -1)
 
+        # self.dbg_b1=self.p.addUserDebugParameter("b1",0.5,0.9,0.61)
+        # self.dbg_b2=self.p.addUserDebugParameter("b2",0.5,0.9,0.82)
+        # self.dbg_b3=self.p.addUserDebugParameter("b3",-1.1,-0.9,-1)
+
         case_xyz = np.array([0.25, 0.3, -0.4])
         hole1_shiftxyz = np.array([0.112, 0.17, -0.03])
         idet1_shiftxyz = np.array([0.06, 0.12, -0.01])
@@ -2065,7 +2073,7 @@ class yw_insd(yw_insert_v1img3cm):
         csig_euler = [3.14 / 2, 3.14, 0]
         csig_qorn = self.bullet_client.getQuaternionFromEuler(csig_euler)
 
-        if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14]:  # Robust 4
+        if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14, 15]:  # Robust 4
             self.e.my_items["case_sig"].append(self.bullet_client.loadURDF(case_sig_ring_urdf,
                                                                          case_xyz + hole1_shiftxyz,
                                                                          csig_qorn,
@@ -2136,7 +2144,12 @@ class yw_insd(yw_insert_v1img3cm):
             noise_1[2] = 0  # robust 1
             noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
             noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
-        elif level in [1, 2, 3, 14]:
+        elif level in [14,15]:
+            noise_0 = self.cam_target_noise_0_from_reset
+            noise_1 = self.cam_target_noise_1_from_reset
+            noise_xyz_0 = self.cam_pos_noise_1_from_reset#np.array([0, 0, 0])
+            noise_xyz_1 = self.cam_pos_noise_1_from_reset#np.array([0, 0, 0])
+        elif level in [1, 2, 3]:
             noise_0 = self.noise_0_from_reset
             noise_1 = self.noise_1_from_reset
             noise_xyz_0 = np.array([0, 0, 0])
@@ -2287,20 +2300,31 @@ class yw_insd(yw_insert_v1img3cm):
 
         level=self.l
         # level = self.z_parse_tname(self.Task, target_task="yw_insd")
-        if level is None:
-            self._set_jaco_ee_pose_yw_insert_v2img3cm()
-        else:
-            if (level in [1, 2, 3,14]):
-                max_translation = 0.01  # meter
-                noise_0 = np.random.uniform(-level / 10 * max_translation, level / 10 * max_translation, [3])
-                # noise_0[2]=0
-                noise_1 = np.random.uniform(-level / 10 * max_translation, level / 10 * max_translation, [3])
-                # noise_1[2]=0
-                self.noise_0_from_reset = noise_0
-                self.noise_1_from_reset = noise_1
+        # if level is None:
+        #     self._set_jaco_ee_pose_yw_insert_v2img3cm()
+        # else:
+        if (level in [1, 2, 3]):
+            max_translation = 0.01  # meter
+            noise_0 = np.random.uniform(-level / 10 * max_translation, level / 10 * max_translation, [3])
+            # noise_0[2]=0
+            noise_1 = np.random.uniform(-level / 10 * max_translation, level / 10 * max_translation, [3])
+            # noise_1[2]=0
+            self.noise_0_from_reset = noise_0
+            self.noise_1_from_reset = noise_1
+        elif level in [14,15]:
+            max_translation = 0.01  # meter
+            n1 = np.random.uniform(-max_translation, max_translation, [3])
+            n2 = np.random.uniform(-max_translation, max_translation, [3])
+            n3 = np.random.uniform(-max_translation, max_translation, [3])
+            n4 = np.random.uniform(-max_translation, max_translation, [3])
+            # noise_1[2]=0
+            self.cam_target_noise_0_from_reset = n1
+            self.cam_target_noise_1_from_reset = n2
+            self.cam_pos_noise_1_from_reset = n3
+            self.cam_pos_noise_1_from_reset = n4
 
-            # Robust 18
-            self.rt18_(level)
+        # Robust 18
+        self.rt18_(level)
 
     # Robust Tools Box (call to make change to env)
     def rt1_(self):
@@ -2395,9 +2419,11 @@ class yw_insd(yw_insert_v1img3cm):
 
     def rt18_(self, level):
         if level in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            s = (level - 1) / 9
+            s = level / 10 * 0.6 + 0.4
         elif level in [11, 12, 13]:
-            s = 0.5
+            s = 1 #0.5
+        elif level in [14,15]:
+            s = 1
         else:
             self._reset_jaco_pos()
             return None
@@ -2405,14 +2431,20 @@ class yw_insd(yw_insert_v1img3cm):
 
         # reset position
         self._reset_jaco_pos()
-        base_new = [0.61, 0.82, -1]
-        pose_noise = (np.random.random([3]) - 0.5) * 0.02
+        base_new = [0.61, 0.811, -1]
+        # base_new = [self.p.readUserDebugParameter(self.dbg_b1),
+        #             self.p.readUserDebugParameter(self.dbg_b2),
+        #             self.p.readUserDebugParameter(self.dbg_b3)]
+        # pose_noise = (np.random.random([3]) - 0.5) * 0.02
+        pose_noise = np.random.uniform(-1,1,3)*0.02
         pose_noise[2] = 0
-        pose_noise[0] += 0
-        pose_noise[1] += 0
-        base_new = np.array(base_new) + pose_noise * s
+        base_new = np.array(base_new) + pose_noise * s #+[0,0,0.1]
+        # print(base_new)
         self.bullet_client.resetBasePositionAndOrientation(self.RobotUid, base_new,
                                                            ROBOT_BASE_ORN_DEFAULT[:])
+
+    # def _terminal(self):
+    #     return 1
 
     def rt19_(self, l, img, seed):
         # Left Right One Image Black
@@ -2455,12 +2487,14 @@ class yw_insd(yw_insert_v1img3cm):
                                                         targetValues=jp)
 
     def rt22_(self, l, img):
+        #   gan BA
         if l in [11,14]:
             # if self.Task in ["yw_insert_g1img", "yw_insert_g1cimg"]:
             img = self.gan_gen(img, "ba")
         return img
 
     def rt23_(self, l, img):
+        # GAN ba -> ab
         if l in [12]:
             # elif self.Task == "yw_insert_g1bimg":
             if (random.random() < 0.4):
@@ -2468,6 +2502,9 @@ class yw_insd(yw_insert_v1img3cm):
                 img = self.gan_gen(img, "ab")
             else:
                 img = self.gan_gen(img, "ab")
+        if l in [15]:
+            img = self.gan_gen(img, "ba")
+            img = self.gan_gen(img, "ab")
         return img
         # elif
 
