@@ -127,7 +127,7 @@ class yw_robotics_env(gym.Env):
 
         # gym
         if self.args is not None:
-            self.observation_space = spaces.Box(0, 255, shape=(*self.args.img_size, 3), dtype='float32')
+            self.observation_space = spaces.Box(0, 255, shape=(3,*self.args.img_size), dtype='float32')
             self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
             self.viewer = None
 

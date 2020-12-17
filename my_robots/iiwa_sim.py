@@ -8,10 +8,10 @@ import pickle
 import copy
 import shutil
 import cv2
-import gym
-from keras.models import load_model
-from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
-import tensorflow as tf
+# import gym
+# from keras.models import load_model
+# from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
+# import tensorflow as tf
 import zmq
 
 try:
@@ -1127,6 +1127,7 @@ class yw_insert_v1img3cm(base_task):
             self.e.detect_coli_case += 1
             if (self.detect_coli_case > self.args.casecoli_done):
                 return 1
+        return 0
     def _reward(self):
         # Success Reward
        # success = self._task_success()
@@ -2295,6 +2296,7 @@ class yw_insd(yw_insert_v1img3cm):
         self.z_save_img(level, img1)
 
         cat_img = self.z_fuse_img(img0, img1, self.args.img_size)
+        cat_img = np.transpose(cat_img,[2,0,1])
         self.images[0] = cat_img
         return self.images[0]
     def reset(self):
