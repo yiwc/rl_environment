@@ -714,7 +714,8 @@ class PandaSim(object):
             if self.images[camera_index] is None:
                 pass
             else:
-                self.viewers[camera_index].imshow(self.images[camera_index])
+                img=self.images[camera_index].transpose([1,2,0])
+                self.viewers[camera_index].imshow(img)
         except:
             pass
     def if_key_board_detected(self):
