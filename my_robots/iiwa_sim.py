@@ -134,7 +134,7 @@ class PandaSim(object):
         self.root_folder_name=root_folder_name
 
         self.Task = Task
-
+        self.task= Task
         self.timestep=TimeStep(sim=self)
         self.temp_timestep=TimeStep(sim=self)
         self.pyb=bullet_client
@@ -376,7 +376,7 @@ class PandaSim(object):
         action_dict={"name":"action","sub_id":0,
                      "action":self.action}
 
-        observe_dict=self._observe()
+        observe_dict=self.taskobj.get_observe_dict()
         observe_dict["name"]="observation"
         observe_dict["subid"]=0
 
@@ -468,8 +468,10 @@ class PandaSim(object):
             else:
                 file_dir_path = os.path.join("game_saves", task, str(expid))
             # print(file_dir_path)
-            assert os.path.exists(file_dir_path)
-
+            try:
+                assert os.path.exists(file_dir_path)
+            except:
+                pass
                 # if (not os.path.exists(file_dir_path)):
                 #     os.mkdir(file_dir_path)
             flist = os.listdir(file_dir_path)
@@ -498,13 +500,19 @@ class PandaSim(object):
             self.saves_list_dict[task][expid]=flist
             return flist
     def get_exp_num(self,task):
-        if(self.exp_num!=0):
-            return self.exp_num
-        else:
-            file_dir_path = os.path.join("game_saves", task)
-            flist = os.listdir(file_dir_path)
-            self.exp_num=len(flist)
-            return len(flist)
+        # if(self.exp_num!=0):
+        #     return self.exp_num
+        # else:
+        file_dir_path = os.path.join("game_saves", task)
+        flist = os.listdir(file_dir_path)
+        self.exp_num=0
+        for f in flist:
+            if "buffer" in f:
+                pass
+            else:
+                self.exp_num+=1
+        # self.exp_num=len(flist)
+        return self.exp_num
     def load_game(self,task,expid,saveid): # it should like reset, but at steps=x
         # task : yw_pick_v1
         # expid : 1
@@ -847,6 +855,10 @@ class yw_pick_v1(base_task):
         self.bullet_client.resetBasePositionAndOrientation(self.my_items["lego"][0],
                                                            [-0.1 + random.random() * 0.1, 0.1,
                                                             -0.5 + random.random() * 0.1], [1, 1, 1, 1])
+    def get_observe_dict(self):
+        # observe=super(sparse1, self)._observe()
+        observe=self.timestep.get_obs()
+        return {"image":observe}
 
     def set_gripper(self, value):  # 0 open, 255 close
         # print(value)
@@ -1140,6 +1152,8 @@ class yw_insert_v1img3cm(base_task):
         # if (success):
         #     pass
 
+        if self._task_success():
+            print("success!")
         return float(reward)
 
         # return self._task_success()
@@ -2521,8 +2535,12 @@ class sparse1(yw_insert_v1img3cm):
         super(sparse1, self).__init__(env)
 
     def get_observe_dict(self):
-        observe=super(sparse1, self)._observe()
+        # observe=super(sparse1, self)._observe()
+        observe=self.timestep.get_obs()
         return {"image":observe}
+
+    def _reward(self):
+        return self._task_success()
 if __name__=="__main__":
     env="None"
     a=yw_pick_v1(env)
