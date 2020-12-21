@@ -34,7 +34,6 @@ class xbox_actor(object):
         # print(1)
         zoom_xyz=0.003
         all=self.get_all()
-        # print(all)
         action=[0,0,0,0,0,0,0]
         action[0]=  all[1] / 100
         action[1]=  all[0] / 100
@@ -168,113 +167,33 @@ class yw_robotics_env(gym.Env):
         return [seed]
 
     def __getattr__(self, name):
+        # try:
         return getattr(self.Env, name)
-
-
-def show_exp(task,expid):
-    task = task
-    env1 = yw_robotics_env(task, DIRECT=0)
-
-    if(expid=="ALL"):
-        for expid in range(21):
-            print(expid)
-            save_list = env1.get_saves_list(task, expid)
-            for i in range(0,len(save_list)):
-            # for i in range(170,186):
-                env1.load_game(task, expid, i)
-                time.sleep(1/240)
-    # if(expid=="")
-    else:
-        save_list = env1.get_saves_list(task, expid)
-        while(1):
-            for i in range(0,len(save_list)):
-            # for i in range(170,186):
-                env1.load_game(task, expid, i)
-                time.sleep(1/240)
-
-    while (1):
-        print("结束")
-        time.sleep(1)
-
-
-def show_save_id_reverse(task,expid):
-    task = task
-    env1 = yw_robotics_env(task, DIRECT=0)
-    while (1):
-        save_list = env1.get_saves_list(task, expid)
-        for i in reversed(range(0,len(save_list))): #
-        # for i in reversed(range(len(save_list)-40,len(save_list)-30)): #
-            env1.load_game(task, expid, i)
-            time.sleep(0.01)
-
-
-        print("结束")
-        time.sleep(1)
-
-def copy_1_to_0(task):
-    path_root=os.path.join(os.getcwd(),"game_saves",task)
-    for expid in os.listdir(path_root):
-        if("b" in expid):
-            continue
-        save_path=os.path.join(path_root,expid)
-        shutil.copy2(os.path.join(save_path,"1"),os.path.join(save_path,"0"))
-class img_save(object):
-    def __init__(self,start_counter_int):
-        self.img_counter=start_counter_int
-    def save(self,img):
-        print("img save",self.img_counter)
-        img=cv2.cvtColor(img,cv2.COLOR_RGB2BGR)
-        cv2.imwrite("z_imgs/"+str(self.img_counter)+".png",img)
-        self.img_counter+=1
-
+        # except:
+        #     return
 
 if __name__=="__main__":
-    # show_exp("yw_reach_v1img",expid="ALL") #0 1
-    # show_save_id_reverse("yw_reach_v1img",expid=14)
-    # show_save_id_reverse("yw_pick_v1img_5cm",expid=0)
-    # copy_1_to_0("yw_reach_v1img")
-    # env1 = yw_robotics_env("yw_reach_v1img", DIRECT=0)
 
-    # actor = xbox_actor()
-    # xboxCont = XboxController(xbox_actor.controlCallBack, deadzone=30, scale=100, invertYAxis=True)
-    # xboxCont.start()
-    # actor.set_controller(xboxCont)
-    # saver=img_save(10000)
-    # env1 = yw_robotics_env("yw_insert_v1img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v2img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v3img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v4img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_g1img", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_g1bimg", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insd_v7", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insd_v13", DIRECT=0)
-    # taskname="yw_insert_g1cimg"
-    taskname="yw_insert_v4img3cm"
-    taskname="yw_insert_g1cimg"
+    actor = xbox_actor()
+    xboxCont = XboxController(xbox_actor.controlCallBack, deadzone=30, scale=100, invertYAxis=True)
+    xboxCont.start()
+    actor.set_controller(xboxCont)
+
     taskname="yw_insf_v1"
-    # taskname="yw_insd_v10"
-    # taskname="yw_insd_v14"
-    # taskname="yw_reach_v1img"
     env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4)
 
     loop=0
-    # action=[0,0]
     ret=0
     while(True):
+        env1.test_robot()
+        p.stepSimulation()
+        time.sleep(0.04)
+        continue
+
         loop+=1
-        # print(loop)
-        # action = actor.get_action()
-        action = np.random.uniform(-1,1,[2])#[0,0] # [up,right]
-        # print(action)
-        # kuka
-        # action = list(np.random.uniform(-1,1,7))
+        action = actor.get_action()
         obs, rew, done, info=env1.step(action) # env1.step(np.random.random([2])-0.3)
 
-        ##insert
-        # action = actor.get_action()
-        # obs, rew, done, info=env1.step(action[0:2]) # env1.step(np.random.random([2])-0.3)
-        # print(stps)
-        # print(rew)
         ret+=rew
         if(done):
             print("ret=",ret," || avret=",ret/loop)
@@ -284,25 +203,4 @@ if __name__=="__main__":
             print("success")
         if(done):
             print("Finished!")
-
         # env1.render()
-
-# Exp Recording Scripts
-# if __name__=="__main__":
-#     # Expert Controller
-
-#     task="yw_reach_v1img"
-#     my_env=yw_robotics_env(task,DIRECT=0,exp_recording=1)
-#
-#     train=1
-#     if(train):
-#         my_env.reset()
-#         e=0
-#         for s in range(100000):
-#             # print(s)
-#             action=actor.get_action()
-#             timestep=my_env.step(action)
-#             if(timestep.done):
-#                 my_env.reset()
-#                 e+=1
-#                 print("e,s=",e,",",s)

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="Cartesian">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0055556 0 0.0094444"
+        rpy="0 0 0" />
+      <mass
+        value="7.4258" />
+      <inertia
+        ixx="0.07605"
+        ixy="1.4151E-19"
+        ixz="0.00022919"
+        iyy="0.013362"
+        iyz="1.3595E-20"
+        izz="0.088922" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="tower_link">
+    <inertial>
+      <origin
+        xyz="0 0 0.175"
+        rpy="0 0 0" />
+      <mass
+        value="2.4753" />
+      <inertia
+        ixx="0.025454"
+        ixy="4.1933E-21"
+        ixz="2.0783E-34"
+        iyy="0.025454"
+        iyz="-2.3908E-19"
+        izz="0.00037129" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/tower_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/tower_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_tower_prismatic_joint"
+    type="prismatic">
+    <origin
+      xyz="0.05 -0.16 0.01"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="tower_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1"
+      upper="1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="shoulder_link">
+    <inertial>
+      <origin
+        xyz="-0.0034615 -0.02 1.3878E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.31432" />
+      <inertia
+        ixx="9.482E-05"
+        ixy="1.625E-21"
+        ixz="8.9762E-22"
+        iyy="7.046E-05"
+        iyz="3.0177E-21"
+        izz="7.046E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/shoulder_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/shoulder_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="tower_shoulder_prismatic_joint"
+    type="prismatic">
+    <origin
+      xyz="0 0.028462 0.05"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="tower_link" />
+    <child
+      link="shoulder_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1"
+      upper="1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="arm_link">
+    <inertial>
+      <origin
+        xyz="2.7756E-17 -2.2551E-17 -0.15"
+        rpy="0 0 0" />
+      <mass
+        value="2.1217" />
+      <inertia
+        ixx="0.016072"
+        ixy="5.9379E-21"
+        ixz="-1.364E-19"
+        iyy="0.016072"
+        iyz="-1.9871E-18"
+        izz="0.00031825" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/arm_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.65098 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Cartesian/meshes/arm_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shoulder_arm_prismatic_joint"
+    type="prismatic">
+    <origin
+      xyz="0.021538 -0.02 0.02"
+      rpy="0 0 0" />
+    <parent
+      link="shoulder_link" />
+    <child
+      link="arm_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1"
+      upper="1"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>
