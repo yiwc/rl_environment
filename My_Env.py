@@ -71,12 +71,13 @@ class yw_robotics_env(gym.Env):
 
         # if "yw_insd" in task:
         yaml_name="yw_insd" if "yw_insd" in task else task
-
-        try:
-            self.args = yaml.load(open(os.path.join(base_dir, "configs/"+yaml_name+".yaml"), 'r'), yaml.Loader)
+        yaml_f=os.path.join(base_dir, "configs/"+yaml_name+".yaml")
+        if os.path.isfile(yaml_f):
+            self.args = yaml.load(open(yaml_f, 'r'), yaml.Loader)
             self.args = namedtuple('arg', self.args.keys())(**self.args)
-        except:
-            self.args= None
+        else:
+            raise NotImplementedError("No Yaml file, please create a ->"+yaml_f)
+            # self.args= None
 
         self.createVideo = 0
         fps = 240

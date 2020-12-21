@@ -1,0 +1,1319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="assembly1_2.SLDASM">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.191106719385108 -0.0780612386754589 0.0973799886130136"
+        rpy="0 0 0" />
+      <mass
+        value="0.149382516846965" />
+      <inertia
+        ixx="0.000744795170187658"
+        ixy="-3.84089187962171E-20"
+        ixz="-6.18144286387083E-21"
+        iyy="4.41983562997799E-05"
+        iyz="-1.49309295627939E-20"
+        izz="0.000778901005787022" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="hip r 1">
+    <inertial>
+      <origin
+        xyz="1.73472347597681E-18 0.0120268950920231 0.058098429367129"
+        rpy="0 0 0" />
+      <mass
+        value="0.0591929214873841" />
+      <inertia
+        ixx="3.31698592544822E-05"
+        ixy="4.65868120989865E-21"
+        ixz="2.85873619698326E-21"
+        iyy="2.04750891988638E-05"
+        iyz="2.87486448422093E-06"
+        izz="1.64834624293157E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip r 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip r 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip r 1"
+    type="continuous">
+    <origin
+      xyz="-0.076807 0.0019388 0.09738"
+      rpy="1.5708 -0.13329 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="hip r 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="hip r 2">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-17 0.0120268950920231 0.00559842936712893"
+        rpy="0 0 0" />
+      <mass
+        value="0.0591929214873841" />
+      <inertia
+        ixx="3.31698592544822E-05"
+        ixy="-8.470329472543E-22"
+        ixz="-3.91752738105114E-21"
+        iyy="2.04750891988638E-05"
+        iyz="2.87486448422093E-06"
+        izz="1.64834624293157E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip r 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip r 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip r 2"
+    type="continuous">
+    <origin
+      xyz="0 0 0.0125"
+      rpy="1.5708 1.5337 3.1416" />
+    <parent
+      link="hip r 1" />
+    <child
+      link="hip r 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee r 1">
+    <inertial>
+      <origin
+        xyz="-0.0030756238754094 -0.0625136599464606 -0.0190191967667686"
+        rpy="0 0 0" />
+      <mass
+        value="0.0774385053688012" />
+      <inertia
+        ixx="6.61264522065945E-05"
+        ixy="-2.093228038064E-06"
+        ixz="2.04803762600533E-07"
+        iyy="2.36834854159962E-05"
+        iyz="4.16274332935502E-06"
+        izz="4.77952428865367E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee r 1"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.04"
+      rpy="1.5708 -0.52466 0" />
+    <parent
+      link="hip r 2" />
+    <child
+      link="knee r 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee r 2">
+    <inertial>
+      <origin
+        xyz="0.00240716222491634 -0.156089099156079 -0.0522148574584647"
+        rpy="0 0 0" />
+      <mass
+        value="0.083279839836233" />
+      <inertia
+        ixx="0.000228137954582334"
+        ixy="3.42048794543038E-06"
+        ixz="5.81808969974627E-07"
+        iyy="2.7149236461316E-05"
+        iyz="-3.41971375908056E-05"
+        izz="0.000206358513925763" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee r 2"
+    type="continuous">
+    <origin
+      xyz="0 -0.11 -0.016999"
+      rpy="0 0 1.4832" />
+    <parent
+      link="knee r 1" />
+    <child
+      link="knee r 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee r 5">
+    <inertial>
+      <origin
+        xyz="0.00271053743745577 0.0246252577409291 0.00250000000000004"
+        rpy="0 0 0" />
+      <mass
+        value="0.00436559859124243" />
+      <inertia
+        ixx="1.63153940888603E-06"
+        ixy="-7.58353672029307E-08"
+        ixz="-1.05879118406788E-22"
+        iyy="1.97587444260464E-07"
+        iyz="-4.19587365717523E-22"
+        izz="1.81093685901632E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee r 5"
+    type="continuous">
+    <origin
+      xyz="-0.0028853 -0.12592 -0.028001"
+      rpy="0 0 -0.95568" />
+    <parent
+      link="knee r 2" />
+    <child
+      link="knee r 5" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ankle r 1">
+    <inertial>
+      <origin
+        xyz="-0.000766308049808151 0.0582275198568301 -0.00285524924798864"
+        rpy="0 0 0" />
+      <mass
+        value="0.0800025169400913" />
+      <inertia
+        ixx="9.22968885238143E-05"
+        ixy="6.24310148522411E-06"
+        ixz="-3.31404429264859E-07"
+        iyy="2.58488738188548E-05"
+        iyz="3.55814678273364E-06"
+        izz="7.27814178413502E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle r 1"
+    type="continuous">
+    <origin
+      xyz="0 -0.19 0"
+      rpy="0 0 1.7042" />
+    <parent
+      link="knee r 2" />
+    <child
+      link="ankle r 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="toe r 1">
+    <inertial>
+      <origin
+        xyz="0.00274071160128481 -0.014184846338064 0.0185053650624499"
+        rpy="0 0 0" />
+      <mass
+        value="0.00815609880038383" />
+      <inertia
+        ixx="2.87789154145384E-06"
+        ixy="1.59762082453015E-07"
+        ixz="-1.06777123441861E-08"
+        iyy="4.33832140360492E-07"
+        iyz="1.14805406264071E-08"
+        izz="3.24725696974408E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe r 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe r 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="toe r 1"
+    type="continuous">
+    <origin
+      xyz="0 0.16 -0.011588"
+      rpy="3.1416 0 1.9361" />
+    <parent
+      link="ankle r 1" />
+    <child
+      link="toe r 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="ankle r 2">
+    <inertial>
+      <origin
+        xyz="-0.00227204931620831 0.0121046634852384 -0.0158438213964389"
+        rpy="0 0 0" />
+      <mass
+        value="0.00519292148738412" />
+      <inertia
+        ixx="1.2296797065945E-06"
+        ixy="-1.28238402112675E-07"
+        ixz="4.66679054952579E-09"
+        iyy="2.35917450537626E-07"
+        iyz="3.67570310623821E-08"
+        izz="1.41501774738188E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle r 2"
+    type="continuous">
+    <origin
+      xyz="0 0.05 -0.014018"
+      rpy="0 0 1.9361" />
+    <parent
+      link="ankle r 1" />
+    <child
+      link="ankle r 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="ankle r 3">
+    <inertial>
+      <origin
+        xyz="0.0123730452615019 0.0545747651396354 0.00306063866994204"
+        rpy="0 0 0" />
+      <mass
+        value="0.0118375967205313" />
+      <inertia
+        ixx="2.24008924792228E-05"
+        ixy="-2.05477484647792E-06"
+        ixz="0"
+        iyy="5.31039884756811E-07"
+        iyz="-3.25578289100872E-21"
+        izz="2.28236843849345E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle r 3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle r 3"
+    type="continuous">
+    <origin
+      xyz="-0.0023219 0.023929 -0.0089828"
+      rpy="3.1416 0 1.2055" />
+    <parent
+      link="ankle r 2" />
+    <child
+      link="ankle r 3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="toe r 2">
+    <inertial>
+      <origin
+        xyz="0.00774071160112788 0.0158151536618433 0.00209315019084882"
+        rpy="0 0 0" />
+      <mass
+        value="0.00815609880038383" />
+      <inertia
+        ixx="2.87789154145324E-06"
+        ixy="1.59762082457608E-07"
+        ixz="-1.06777123442075E-08"
+        iyy="4.33832140361093E-07"
+        iyz="1.14805406263862E-08"
+        izz="3.24725696974408E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe r 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe r 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="toe r 2"
+    type="continuous">
+    <origin
+      xyz="0.0047139 0.10533 0.005"
+      rpy="0 0 1.2055" />
+    <parent
+      link="ankle r 3" />
+    <child
+      link="toe r 2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="knee r 3">
+    <inertial>
+      <origin
+        xyz="0.00133111370072312 -0.0513017239779947 -0.0215826888826632"
+        rpy="0 0 0" />
+      <mass
+        value="0.0105202443835258" />
+      <inertia
+        ixx="1.36876819779511E-05"
+        ixy="3.9912661139951E-07"
+        ixz="0"
+        iyy="2.92089666106859E-07"
+        iyz="-1.09849585347042E-21"
+        izz="1.39027542200564E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee r 3"
+    type="continuous">
+    <origin
+      xyz="0 -0.075 -0.025286"
+      rpy="0 0 1.4633" />
+    <parent
+      link="knee r 1" />
+    <child
+      link="knee r 3" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee r 4">
+    <inertial>
+      <origin
+        xyz="0.00271053743745577 0.0246252577409291 0.00250000000000004"
+        rpy="0 0 0" />
+      <mass
+        value="0.00436559859124243" />
+      <inertia
+        ixx="1.63153940888603E-06"
+        ixy="-7.58353672029306E-08"
+        ixz="-1.05879118406788E-22"
+        iyy="1.97587444260464E-07"
+        iyz="-4.00148621322527E-22"
+        izz="1.81093685901632E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee r 4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee r 4"
+    type="continuous">
+    <origin
+      xyz="-0.035167 -0.12971 -0.019714"
+      rpy="0 0 -0.9357" />
+    <parent
+      link="knee r 3" />
+    <child
+      link="knee r 4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="hip l 1">
+    <inertial>
+      <origin
+        xyz="0 0.0120268950920231 0.058098429367129"
+        rpy="0 0 0" />
+      <mass
+        value="0.0591929214873841" />
+      <inertia
+        ixx="3.31698592544822E-05"
+        ixy="3.59989002583078E-21"
+        ixz="1.58818677610181E-22"
+        iyy="2.04750891988638E-05"
+        iyz="2.87486448422093E-06"
+        izz="1.64834624293157E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip l 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip l 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip l 1"
+    type="continuous">
+    <origin
+      xyz="-0.076807 -0.15806 0.09738"
+      rpy="1.5708 -0.13329 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="hip l 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="hip l 2">
+    <inertial>
+      <origin
+        xyz="1.38777878078145E-17 0.0120268950920231 0.010598429367129"
+        rpy="0 0 0" />
+      <mass
+        value="0.0591929214873841" />
+      <inertia
+        ixx="3.31698592544822E-05"
+        ixy="2.5410988417629E-21"
+        ixz="8.3048933500324E-21"
+        iyy="2.04750891988638E-05"
+        iyz="2.87486448422093E-06"
+        izz="1.64834624293157E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip l 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/hip l 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip l 2"
+    type="continuous">
+    <origin
+      xyz="0 0 0.0125"
+      rpy="-1.5708 -1.522 0" />
+    <parent
+      link="hip l 1" />
+    <child
+      link="hip l 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee l 1">
+    <inertial>
+      <origin
+        xyz="4.01866040444787E-14 -0.0625892733791078 -0.0190191967667685"
+        rpy="0 0 0" />
+      <mass
+        value="0.0774385053688013" />
+      <inertia
+        ixx="6.62294374123249E-05"
+        ixy="2.73635317099482E-17"
+        ixz="-2.66391861911477E-18"
+        iyy="2.35805002102658E-05"
+        iyz="4.16777837789692E-06"
+        izz="4.77952428865367E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee l 1"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.035"
+      rpy="1.5708 0.91663 0" />
+    <parent
+      link="hip l 2" />
+    <child
+      link="knee l 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee l 2">
+    <inertial>
+      <origin
+        xyz="6.44720388187636E-13 -0.161508763059346 -0.0589766016664935"
+        rpy="0 0 0" />
+      <mass
+        value="0.0832798398362331" />
+      <inertia
+        ixx="0.000228196148650859"
+        ixy="7.98529934870388E-16"
+        ixz="1.35797169136757E-16"
+        iyy="2.70910423927903E-05"
+        iyz="-3.42020865018793E-05"
+        izz="0.000206358513925763" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee l 2"
+    type="continuous">
+    <origin
+      xyz="0 -0.11 -0.010238"
+      rpy="0 0 -1.3442" />
+    <parent
+      link="knee l 1" />
+    <child
+      link="knee l 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee l 5">
+    <inertial>
+      <origin
+        xyz="0.00499999999963306 0.0199999999993625 0.00250000000000036"
+        rpy="0 0 0" />
+      <mass
+        value="0.00436559859124245" />
+      <inertia
+        ixx="1.63553885065662E-06"
+        ixy="4.70817887057321E-18"
+        ixz="2.64697796016969E-23"
+        iyy="1.93588002489886E-07"
+        iyz="3.37489689921635E-22"
+        izz="1.81093685901633E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee l 5"
+    type="continuous">
+    <origin
+      xyz="0.0035005 -0.12643 -0.029762"
+      rpy="3.1416 0 -2.3463" />
+    <parent
+      link="knee l 2" />
+    <child
+      link="knee l 5" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ankle l 1">
+    <inertial>
+      <origin
+        xyz="3.63070684628042E-13 0.0620823996554604 -0.00961699345601741"
+        rpy="0 0 0" />
+      <mass
+        value="0.0800025169400913" />
+      <inertia
+        ixx="9.2878368606253E-05"
+        ixy="5.09278559536648E-20"
+        ixz="-1.27054942088145E-20"
+        iyy="2.5267393736416E-05"
+        iyz="3.57354689674188E-06"
+        izz="7.27814178413501E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle l 1"
+    type="continuous">
+    <origin
+      xyz="0 -0.19 0"
+      rpy="0 0 -1.3683" />
+    <parent
+      link="knee l 2" />
+    <child
+      link="ankle l 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="ankle l 2">
+    <inertial>
+      <origin
+        xyz="-8.511941151923E-13 0.0111659648639497 -0.016164096056952"
+        rpy="0 0 0" />
+      <mass
+        value="0.00519292148738413" />
+      <inertia
+        ixx="1.24596126540838E-06"
+        ixy="9.86945171193663E-19"
+        ixz="-3.55687663397802E-20"
+        iyy="2.19635891723748E-07"
+        iyz="3.70521020531085E-08"
+        izz="1.41501774738188E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle l 2"
+    type="continuous">
+    <origin
+      xyz="0 0.05 -0.020459"
+      rpy="0 0 -1.8524" />
+    <parent
+      link="ankle l 1" />
+    <child
+      link="ankle l 2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="ankle l 3">
+    <inertial>
+      <origin
+        xyz="0.00649999999970655 0.0550000000005425 0.00306063866994211"
+        rpy="0 0 0" />
+      <mass
+        value="0.0118375967205313" />
+      <inertia
+        ixx="2.25922734218442E-05"
+        ixy="-3.29100010558816E-20"
+        ixz="-1.27054942088145E-21"
+        iyy="3.39658942135426E-07"
+        iyz="-2.61719945811778E-20"
+        izz="2.28236843849345E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/ankle l 3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ankle l 3"
+    type="continuous">
+    <origin
+      xyz="-0.0018061 0.036244 -0.0093031"
+      rpy="3.1416 0 -1.2892" />
+    <parent
+      link="ankle l 2" />
+    <child
+      link="ankle l 3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="toe l 2">
+    <inertial>
+      <origin
+        xyz="0.00775642955128433 0.0261625031033984 0.00290684980915118"
+        rpy="0 0 0" />
+      <mass
+        value="0.00815609880038382" />
+      <inertia
+        ixx="2.87904339006944E-06"
+        ixy="-1.50689780001435E-07"
+        ixz="9.1466801350844E-09"
+        iyy="4.32680291744886E-07"
+        iyz="-1.27339937366981E-08"
+        izz="3.24725696974407E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe l 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe l 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="toe l 2"
+    type="continuous">
+    <origin
+      xyz="0.0078893 0.1052 0.01"
+      rpy="3.1416 0 1.8524" />
+    <parent
+      link="ankle l 3" />
+    <child
+      link="toe l 2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="toe l 1">
+    <inertial>
+      <origin
+        xyz="0.183369600875712 -0.123088815264641 -0.212133797441015"
+        rpy="0 0 0" />
+      <mass
+        value="0.00815609880038382" />
+      <inertia
+        ixx="2.87904339006944E-06"
+        ixy="-1.50689780001435E-07"
+        ixz="9.14668013508439E-09"
+        iyy="4.32680291744886E-07"
+        iyz="-1.27339937366982E-08"
+        izz="3.24725696974407E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe l 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/toe l 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="toe l 1"
+    type="continuous">
+    <origin
+      xyz="-0.16474 0.019635 0.17528"
+      rpy="0 0 1.2892" />
+    <parent
+      link="ankle l 1" />
+    <child
+      link="toe l 1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee l 3">
+    <inertial>
+      <origin
+        xyz="2.43183945203285E-13 -0.0549999999999739 -0.0253082727154713"
+        rpy="0 0 0" />
+      <mass
+        value="0.0105202443835258" />
+      <inertia
+        ixx="1.36995635637846E-05"
+        ixy="4.75739764730425E-17"
+        ixz="1.05879118406788E-22"
+        iyy="2.80208080273239E-07"
+        iyz="8.20232295407582E-21"
+        izz="1.39027542200563E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee l 3"
+    type="continuous">
+    <origin
+      xyz="0 -0.075 -0.021561"
+      rpy="0 0 -1.2938" />
+    <parent
+      link="knee l 1" />
+    <child
+      link="knee l 3" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="knee l 4">
+    <inertial>
+      <origin
+        xyz="0.0049999999995757 0.0199999999992949 0.00250000000000031"
+        rpy="0 0 0" />
+      <mass
+        value="0.00436559859124244" />
+      <inertia
+        ixx="1.63553885065662E-06"
+        ixy="4.70906839992444E-18"
+        ixz="-2.64697796016969E-23"
+        iyy="1.93588002489886E-07"
+        iyz="2.83309359799412E-22"
+        izz="1.81093685901633E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://assembly1_2.SLDASM/meshes/knee l 4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="knee l 4"
+    type="continuous">
+    <origin
+      xyz="0.03079 -0.13602 -0.018439"
+      rpy="-3.1416 0 -2.3968" />
+    <parent
+      link="knee l 3" />
+    <child
+      link="knee l 4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

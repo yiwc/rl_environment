@@ -91,7 +91,9 @@ JACO_INSERT_JP=[1.9450396065385336, 1.628769735977028, 1.5838618332079535, 1.273
 # restposes for null space
 # fPANDA_jointPositions = [0.98, 0.458, 0.31, -2.24, -0.30, 2.66, 2.32, 0.02, 0.02]
 # PANDA_RP = PANDA_jointPositions
-
+# class fake_args(object):
+#     def __init__(self):
+#         pass
 class spec(object):
     def __init__(self, maximum,minimum,shape):
         self.maximum=maximum
@@ -134,7 +136,7 @@ class PandaSim(object):
         self.root_folder_name=root_folder_name
 
         self.Task = Task
-
+        self.task= Task
         self.timestep=TimeStep(sim=self)
         self.temp_timestep=TimeStep(sim=self)
         self.pyb=bullet_client
@@ -376,7 +378,7 @@ class PandaSim(object):
         action_dict={"name":"action","sub_id":0,
                      "action":self.action}
 
-        observe_dict=self._observe()
+        observe_dict=self.taskobj.get_observe_dict()
         observe_dict["name"]="observation"
         observe_dict["subid"]=0
 
@@ -468,8 +470,10 @@ class PandaSim(object):
             else:
                 file_dir_path = os.path.join("game_saves", task, str(expid))
             # print(file_dir_path)
-            assert os.path.exists(file_dir_path)
-
+            try:
+                assert os.path.exists(file_dir_path)
+            except:
+                pass
                 # if (not os.path.exists(file_dir_path)):
                 #     os.mkdir(file_dir_path)
             flist = os.listdir(file_dir_path)
@@ -498,13 +502,19 @@ class PandaSim(object):
             self.saves_list_dict[task][expid]=flist
             return flist
     def get_exp_num(self,task):
-        if(self.exp_num!=0):
-            return self.exp_num
-        else:
-            file_dir_path = os.path.join("game_saves", task)
-            flist = os.listdir(file_dir_path)
-            self.exp_num=len(flist)
-            return len(flist)
+        # if(self.exp_num!=0):
+        #     return self.exp_num
+        # else:
+        file_dir_path = os.path.join("game_saves", task)
+        flist = os.listdir(file_dir_path)
+        self.exp_num=0
+        for f in flist:
+            if "buffer" in f:
+                pass
+            else:
+                self.exp_num+=1
+        # self.exp_num=len(flist)
+        return self.exp_num
     def load_game(self,task,expid,saveid): # it should like reset, but at steps=x
         # task : yw_pick_v1
         # expid : 1
@@ -824,7 +834,7 @@ class yw_pick_v1(base_task):
         pass
     def init_load_items(self):
         self.m.load_a_standard_table()
-        self.env.maxsteps=500
+        self.env.maxsteps=120
         self.env.my_items["lego"].append(
             self.bullet_client.loadURDF("lego/lego.urdf", np.array([-0.1, 0.3, -0.5]), flags=self.flags))
         # load kuka
@@ -833,7 +843,7 @@ class yw_pick_v1(base_task):
         self.env.RobotUid = kukaobjs[0]
         self.env.my_items["robot"].append(self.env.RobotUid)
     def reset(self):
-        print("reset!")
+        # print("reset!")
         self.env.jointPositions = KUKA_DEFAULT_JP[:]
         self.bullet_client.resetBasePositionAndOrientation(self.RobotUid,
                                                            [0,0,0],
@@ -847,6 +857,10 @@ class yw_pick_v1(base_task):
         self.bullet_client.resetBasePositionAndOrientation(self.my_items["lego"][0],
                                                            [-0.1 + random.random() * 0.1, 0.1,
                                                             -0.5 + random.random() * 0.1], [1, 1, 1, 1])
+    def get_observe_dict(self):
+        # observe=super(sparse1, self)._observe()
+        observe=self.timestep.get_obs()
+        return {"image":observe}
 
     def set_gripper(self, value):  # 0 open, 255 close
         # print(value)
@@ -991,7 +1005,15 @@ class yw_pick_v1(base_task):
             return 1
         else:
             return 0
+    def check_collied(self,a,b):
 
+        tcollision = self.bullet_client.getContactPoints(
+            a,
+            b)
+        if (tcollision):
+            return 1
+        else:
+            return 0
     def _action_spec(self):
         maxmimum = np.array([1, 1, 1, 1, 1, 1, 1])
         minimum = np.array([-1, -1, -1, -1, -1, -1, -1])
@@ -1001,6 +1023,8 @@ class yw_pick_v1(base_task):
 class yw_pick_v1img(yw_pick_v1):
     def __init__(self,env):
         super().__init__(env)
+        # self.args=fake_args()
+        # self.args.img_size=[64,64]
         pass
     def _observe(self):
 
@@ -1035,8 +1059,8 @@ class yw_pick_v1img(yw_pick_v1):
             0.75, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0000200271606445, -1.0, 0.0, 0.0,
             -0.02000020071864128, 0.0
         ]
-        imgh = 64
-        imgw = 64
+        imgh = self.args.img_size[0]#64
+        imgw = self.args.img_size[1]#64
         img_arr = self.bullet_client.getCameraImage(width=imgh,
                                                     height=imgw,
                                                     viewMatrix=viewMat,
@@ -1140,6 +1164,8 @@ class yw_insert_v1img3cm(base_task):
         # if (success):
         #     pass
 
+        if self._task_success():
+            print("success!")
         return float(reward)
 
         # return self._task_success()
@@ -2521,8 +2547,31 @@ class sparse1(yw_insert_v1img3cm):
         super(sparse1, self).__init__(env)
 
     def get_observe_dict(self):
-        observe=super(sparse1, self)._observe()
+        # observe=super(sparse1, self)._observe()
+        observe=self.timestep.get_obs()
         return {"image":observe}
+
+    def _reward(self):
+        return self._task_success()
+
+class sparse2(yw_pick_v1img_5cm):
+    def __init__(self,env):
+        super(sparse2, self).__init__(env)
+        # self.args=fake_args()
+        # self.args.img_size=[15,15]
+    def _terminal(self):
+        if self._terminal_of_maxsteps():
+            return 1
+        return 0
+    def _reward(self):
+        lego_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["lego"][0])[0]
+        table_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["table"][0])[0]
+        d_height = lego_height[1] - table_height[1]
+        # print(d_height)
+        if (abs(d_height) > 0.65 + 0.05 and self.check_collied(self.RobotUid,self.my_items["lego"][0])):
+            print("You Win, Reward = 1")
+            return 1
+        return 0
 if __name__=="__main__":
     env="None"
     a=yw_pick_v1(env)
