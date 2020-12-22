@@ -14,10 +14,11 @@ def make_env():
 if __name__=="__main__":
 
 
-    taskname="yw_insf_v1"
+    taskname="yw_insf_v9"
 
     # env1 = yw_robotics_env(taskname, DIRECT=1,gan_srvs=4)
     num_cpu = 20
+
 
     if num_cpu>1:
         vecs = [make_env() for i in range(num_cpu)]
@@ -28,7 +29,7 @@ if __name__=="__main__":
     loop=0
     ret=0
 
-    lps=100
+    lps=10
     while(True):
         st=time.time()
         for i in range(lps):

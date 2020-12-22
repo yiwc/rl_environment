@@ -2130,7 +2130,7 @@ class yw_insd(yw_insert_v1img3cm):
                                                                          csig_qorn,
                                                                          flags=self.flags))
         # Robust 8
-        if level in [6, 7, 8, 9, 10]:
+        if level in [6, 7, 8, 9, 10,13]:
             self._loadstuff_tv()
 
         # load detect shape
@@ -2265,7 +2265,7 @@ class yw_insd(yw_insert_v1img3cm):
                                                                        np.random.uniform(0, -5)])
 
         # Robust 9
-        if level in [6, 7, 8, 9, 10]:
+        if level in [6, 7, 8, 9, 10, 13]:
             self.bullet_client.changeVisualShape(self.tv, -1, textureUniqueId=random.choice(self.bg_textures))
 
         # Robust 11
@@ -2576,7 +2576,6 @@ class yw_insf(yw_insd):
             self.RobotUid,
             # self.JacoCart_BasePos,
             self.JacoCart_BaseOrn)
-
         self.e.numJoints = self.bullet_client.getNumJoints(self.RobotUid)
     def get_end_effect_pos_orn(self):
         ee_index=self.JacoCartEEIndex
@@ -2692,7 +2691,7 @@ class yw_insf(yw_insd):
                                                                          csig_qorn,
                                                                          flags=self.flags))
         # Robust 8
-        if level in [6, 7, 8, 9, 10]:
+        if level in [6, 7, 8, 9, 10, 13]:
             self._loadstuff_tv()
 
         # load detect shape
@@ -2860,7 +2859,7 @@ class yw_insf(yw_insd):
                                                                        np.random.uniform(0, -5)])
 
         # Robust 9
-        if level in [6, 7, 8, 9, 10]:
+        if level in [6, 7, 8, 9, 10, 13]:
             self.bullet_client.changeVisualShape(self.tv, -1, textureUniqueId=random.choice(self.bg_textures))
 
         # Robust 11
@@ -3103,8 +3102,8 @@ class yw_insf(yw_insd):
     def rt18_(self, level):
         if level in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
             s = level / 10 * 0.6 + 0.4
-            if level==1:
-                s=0
+            # if level==1:
+            #     s=0
         elif level in [11, 12, 13]:
             s = 1 #0.5
         elif level in [14,15]:
@@ -3154,12 +3153,16 @@ class yw_insf(yw_insd):
                                                  textureUniqueId=random.choice(self.bg_textures))
 
     def rt21_(self, l):
+        # Gripper
+        # Open
+        # Close
+        # Degree
         if l in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            d = 1.3
+            d = 0.8
             s = (l - 3) / 7 * self.rtscale_21
             maxd = 0.5
         elif l in [11, 12, 13]:
-            d = 1.3
+            d = 0.8
             s = 0.2
             maxd = 0.5
         else:
@@ -3168,7 +3171,7 @@ class yw_insf(yw_insd):
             m = maxd * np.random.uniform(-1, 1, [3]) * s
             jp = list(m + d)
             jp = [[jpi] for jpi in jp]
-            self.bullet_client.resetJointStatesMultiDof(self.RobotUid, [i + 7 for i in range(len(jp))],
+            self.bullet_client.resetJointStatesMultiDof(self.RobotUid, [3,4,5],
                                                         targetValues=jp)
 
     def rt22_(self, l, img):
