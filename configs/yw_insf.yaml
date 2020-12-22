@@ -2,7 +2,8 @@
 max_reward_ee_xy: [0.309, 0.406] #[0.30801931 0.40454441]
 
 
-img_size: [128, 128]
+single_img_size: [128, 128]
+obs_shape: [128,256]
 
 # camera 1
 fov: 19

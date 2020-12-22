@@ -693,7 +693,8 @@ class PandaSim(object):
         cam_up_vec = [0, 1, 0]  # follow the green axis
         viewMat = self.bullet_client.computeViewMatrix(cam_pos, cam_target_pos, cam_up_vec)
         fov = fov  # self.args.fov
-        size = self.args.img_size
+        key = "single_img_size" if "single_img_size" in self.args.__dir__() else "img_size"
+        size = eval("self.args."+key)
         clip = [0.1, 4.0]
         projMatrix = self.bullet_client.computeProjectionMatrixFOV(fov, size[0] / size[1], clip[0], clip[1])
         imgh = size[0]
@@ -2916,11 +2917,16 @@ class yw_insf(yw_insd):
         self.z_save_img(level, img0)
         self.z_save_img(level, img1)
 
-        cat_img = self.z_fuse_img(img0, img1, self.args.img_size)
+        cat_img = self.z_fuse_img(img0, img1)
         cat_img = np.transpose(cat_img,[2,0,1])
         self.images[0] = cat_img
         return self.images[0]
 
+    def z_fuse_img(self,img0,img1):
+        # i0_resize = cv2.resize(img0, (int(size[0] / 2), size[1]))
+        # i1_resize = cv2.resize(img1, (int(size[0] / 2), size[1]))
+        cat_img=np.concatenate([img0,img1],axis=1).astype(np.uint8)
+        return cat_img
     def reset(self):
         # reset some flags
         self.e.detect_coli_case = 0

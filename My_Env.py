@@ -129,8 +129,9 @@ class yw_robotics_env(gym.Env):
         pass
 
         # gym
+
         if self.args is not None:
-            self.observation_space = spaces.Box(0, 255, shape=(3,*self.args.img_size), dtype='float32')
+            self.observation_space = spaces.Box(0, 255, shape=(3,*self.args.obs_shape), dtype='float32')
             self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
             self.viewer = None
 
@@ -285,7 +286,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        # env1.render()
+        env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":
