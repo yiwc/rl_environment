@@ -1,6 +1,7 @@
 
 # camera
 img_size: [15, 15]
+obs_shape: [15, 15]
 #fov: 25
 #camera_shitft_xyz: [-0.1, +0.05, -0.05]
 #camera_shift_rpy: [0,2,2.7]
@@ -18,4 +19,4 @@ action_high: 1
 action_len: 7
 
 # RIMRL
-max_level: 200
+#max_level: 200

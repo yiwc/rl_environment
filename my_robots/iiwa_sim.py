@@ -13,7 +13,6 @@ import cv2
 # from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
 # import tensorflow as tf
 import zmq
-
 try:
     from gym.envs.classic_control import rendering
 except:
@@ -57,10 +56,7 @@ KUKA_JD = [
     0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001,
     0.00001, 0.00001, 0.00001, 0.00001
 ]
-KUKA_DEFAULT_JP=[
-            1.6, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
-            -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
-        ]
+
 
 # lower limits for null space
 JACO_ll = [-.967, -2, -2.96, 0.19, -2.96, -2.09, -3.05]
@@ -181,6 +177,7 @@ class PandaSim(object):
     # pending
     def get_taskobj_by_name(self,name):
 
+        # from my_robots.task import sparse3
         if "yw_insd" in name:
             n="yw_insd"
             level=int(name.split("v")[1])
@@ -376,11 +373,7 @@ class PandaSim(object):
                      "maxsteps":self.maxsteps,
                      "Task":self.Task}
         item_dict={"name":"None","sub_id":0,"pos":[0,0,0],"orn":[0,0,0,0],"v_pos":[0,0,0],"v_ang":[0,0,0]}
-        # robot_dict={"name":"kukav1",
-        #             "jp":KUKA_DEFAULT_JP,
-        #             "jv":KUKA_DEFAULT_JP,
-        #             "jointReactionForces":KUKA_DEFAULT_JP,
-        #             "appliedJointMotorTorque":KUKA_DEFAULT_JP}
+
         action_dict={"name":"action","sub_id":0,
                      "action":self.action}
 
@@ -816,6 +809,8 @@ class base_task(object):
     def _terminal(self):
         raise NotImplementedError("")
     def _terminal_of_maxsteps(self):
+
+        # print("self.maxsteps->",self.maxsteps)
         return 1 if self.steps>self.maxsteps else 0
     def _get_external_observe(self):
         raise NotImplementedError("")
@@ -825,6 +820,9 @@ class base_task(object):
         raise NotImplementedError("")
     def __getattr__(self, item):
         return eval("self.env."+item)
+    def change_maxsteps(self,maxsteps):
+        self.maxsteps=maxsteps
+        # print("env maxsteps changed to->",maxsteps)
 
     class Macron(object):
         def __init__(self,env):
@@ -841,6 +839,10 @@ class yw_pick_v1(base_task):
     def __init__(self,env):
         super().__init__(env)
         self.env.robot_name='kuka'
+        self.KUKA_DEFAULT_JP=[
+            1.6, 0.413184, -0.011401, -1.589317, 0.005379, 1.137684, -0.006539, 0.000048,
+            -0.299912, 0.000000, -0.000043, 0.299960, 0.000000, -0.000200
+        ]
         pass
     def init_load_items(self):
         self.m.load_a_standard_table()
@@ -854,7 +856,7 @@ class yw_pick_v1(base_task):
         self.env.my_items["robot"].append(self.env.RobotUid)
     def reset(self):
         # print("reset!")
-        self.env.jointPositions = KUKA_DEFAULT_JP[:]
+        self.env.jointPositions = self.KUKA_DEFAULT_JP[:]
         self.bullet_client.resetBasePositionAndOrientation(self.RobotUid,
                                                            [0,0,0],
                                                            [-0.707107, 0.0, 0.0, 0.707107])
@@ -1094,7 +1096,6 @@ class yw_pick_v1img_5cm(yw_pick_v1img):
     def _terminal(self):
         if self._table_collied():
             return 1
-
         lego_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["lego"][0])[0]
         table_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["table"][0])[0]
         d_height = lego_height[1] - table_height[1]
@@ -1124,12 +1125,14 @@ class yw_reach_v1img(yw_pick_v1img):
         # reset in every step
         return self.env.Task_Success
     def _terminal(self):
+        if self._terminal_of_maxsteps():
+            return 1
         if self._table_collied():
             return 1
         if (self._task_success()):
             return self._task_success()
-        else:
-            return 0
+        # else:
+        return 0
     def _task_success(self):
         if (self.Task_Success_Updated):
             return self.e.Task_Success
@@ -3225,6 +3228,7 @@ class yw_insf(yw_insd):
 
 
 #Task3: Sparse Reward Envs
+# 3.1 2d sparse insert
 class sparse1(yw_insert_v1img3cm):
     def __init__(self,env):
         super(sparse1, self).__init__(env)
@@ -3236,6 +3240,7 @@ class sparse1(yw_insert_v1img3cm):
 
     def _reward(self):
         return self._task_success()
+# 3.2 6d sparse pick (debug)
 class sparse2(yw_pick_v1img_5cm):
     def __init__(self,env):
         super(sparse2, self).__init__(env)
@@ -3244,16 +3249,42 @@ class sparse2(yw_pick_v1img_5cm):
     def _terminal(self):
         if self._terminal_of_maxsteps():
             return 1
-        return 0
+        return super(sparse2, self)._terminal()
     def _reward(self):
         lego_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["lego"][0])[0]
         table_height = self.bullet_client.getBasePositionAndOrientation(self.my_items["table"][0])[0]
         d_height = lego_height[1] - table_height[1]
         # print(d_height)
         if (abs(d_height) > 0.65 + 0.05 and self.check_collied(self.RobotUid,self.my_items["lego"][0])):
-            print("You Win, Reward = 1")
+            # print("You Win, Reward = 1")
             return 1
         return 0
+# 3.3 3d sparse reach
+class sparse3(yw_reach_v1img):
+    def __init__(self,env):
+        super(sparse3, self).__init__(env)
+        self.e.maxsteps = 85
+    def _apply_action_to_sim(self,action):
+        assert len(action)==self.args.action_len
+        a=list(action)
+        a=a[:3]+[0,0,0]+a[-1:]
+        return super(sparse3, self)._apply_action_to_sim(a)
+# 3.3.2 3d sparse push (for GuoSheng Demo)
+class sparse4(sparse3):
+    def __init__(self,env):
+        super(sparse3, self).__init__(env)
+        self.delay_terminal=3
+        self.delayed=3
+    def _terminal(self):
+        if self.delayed==0:
+            done = super(sparse4, self)._terminal()
+        if self.delayed:
+            self.delayed+=1
+        if self.delayed>self.delay_terminal:
+            self.delayed=0
+            return 1
+        return 0
+
 if __name__=="__main__":
     env="None"
     a=yw_pick_v1(env)

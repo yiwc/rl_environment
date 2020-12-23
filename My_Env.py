@@ -259,7 +259,7 @@ if __name__=="__main__":
     # taskname="yw_insert_g1cimg"
     taskname="yw_insert_v4img3cm"
     taskname="yw_insert_g1cimg"
-    taskname="yw_insf_v15"
+    taskname="sparse3"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
     # taskname="yw_reach_v1img"
@@ -272,7 +272,7 @@ if __name__=="__main__":
         loop+=1
         # print(loop)
         # action = actor.get_action()
-        action = np.random.uniform(-1,1,[2])#[0,0] # [up,right]
+        action = np.random.uniform(-1,1,[3])#[0,0] # [up,right]
         # print(action)
         # kuka
         # action = list(np.random.uniform(-1,1,7))
