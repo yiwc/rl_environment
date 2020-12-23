@@ -259,11 +259,11 @@ if __name__=="__main__":
     # taskname="yw_insert_g1cimg"
     taskname="yw_insert_v4img3cm"
     taskname="yw_insert_g1cimg"
-    taskname="yw_insf_v13"
+    taskname="yw_insf_v15"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
     # taskname="yw_reach_v1img"
-    env1 = yw_robotics_env(taskname, DIRECT=1,gan_srvs=4)
+    env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4)
 
     loop=0
     # action=[0,0]
@@ -293,7 +293,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        # env1.render()
+        env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":

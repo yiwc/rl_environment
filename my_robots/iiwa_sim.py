@@ -129,10 +129,11 @@ class TimeStep(object):
 class PandaSim(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("the simulator has closed!")
-    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment",gan_srvs=1):
+    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment",gan_srvs=1,gan_dgx=False,**kwargs):
         print("YOURTASK=",Task)
 
         self.gan_srvs=gan_srvs
+        self.gan_dgx=gan_dgx
         self.root_folder_name=root_folder_name
 
         self.Task = Task
@@ -600,6 +601,8 @@ class PandaSim(object):
 
     # GAN
     def _init_GAN(self):
+        ip = "localhost" if self.gan_dgx == False else "172.16.127.89"
+
         self.context = zmq.Context()
 
         self.sabs=[]
@@ -608,10 +611,10 @@ class PandaSim(object):
         ptba=5601
         for i in range(self.gan_srvs):
             q=self.context.socket(zmq.REQ)
-            q.connect("tcp://localhost:"+str(ptab))
+            q.connect("tcp://{}:".format(ip)+str(ptab))
             self.sabs.append(q)
             q=self.context.socket(zmq.REQ)
-            q.connect("tcp://localhost:"+str(ptba))
+            q.connect("tcp://{}:".format(ip)+str(ptba))
             self.sbas.append(q)
             ptab+=2
             ptba+=2
