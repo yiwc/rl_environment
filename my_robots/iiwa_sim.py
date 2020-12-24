@@ -2571,7 +2571,7 @@ class yw_insd(yw_insert_v1img3cm):
 class yw_insf(yw_insd):
     def __init__(self,env,level):
         super(yw_insf, self).__init__(env,level)
-
+        self.reset_times=0
     def _reset_jaco_pos(self):
         jp=self.JacoCart_reset_jp
         self.bullet_client.resetJointStatesMultiDof(self.RobotUid, [i for i in range(len(jp))], targetValues=jp)
@@ -2697,7 +2697,7 @@ class yw_insf(yw_insd):
                                                                          csig_qorn,
                                                                          flags=self.flags))
         # Robust 8
-        if level in [6, 7, 8, 9, 10, 13]:
+        if level in [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]:
             self._loadstuff_tv()
 
         # load detect shape
@@ -2865,9 +2865,12 @@ class yw_insf(yw_insd):
                                                                        np.random.uniform(0, -5)])
 
         # Robust 9
-        if level in [6, 7, 8, 9, 10, 13]:
+        if level in [6, 7, 8, 9, 10, 11,12,13]:
             self.bullet_client.changeVisualShape(self.tv, -1, textureUniqueId=random.choice(self.bg_textures))
-
+        elif level in [14,15]:
+            random.seed(self.reset_times)
+            self.bullet_client.changeVisualShape(self.tv, -1, textureUniqueId=random.choice(self.bg_textures))
+            random.seed(time.time())
         # Robust 11
         self.rt11_(level)
 
@@ -2958,6 +2961,9 @@ class yw_insf(yw_insd):
 
         # Robust 18
         self.rt18_(level)
+
+        # for generate random seed
+        self.reset_times+=1
 
     def _apply_action_to_sim(self, action):
 

@@ -257,13 +257,14 @@ if __name__=="__main__":
     # env1 = yw_robotics_env("yw_insd_v7", DIRECT=0)
     # env1 = yw_robotics_env("yw_insd_v13", DIRECT=0)
     # taskname="yw_insert_g1cimg"
-    taskname="yw_insert_v4img3cm"
-    taskname="yw_insert_g1cimg"
-    taskname="sparse3"
+    # taskname="yw_insert_v4img3cm"
+    # taskname="yw_insert_g1cimg"
+    # taskname="sparse3"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
+    taskname="yw_insf_v11"
     # taskname="yw_reach_v1img"
-    env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4)
+    env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4,gan_dgx=True)
 
     loop=0
     # action=[0,0]
