@@ -810,7 +810,7 @@ class base_task(object):
         raise NotImplementedError("")
     def _terminal_of_maxsteps(self):
 
-        # print("self.maxsteps->",self.maxsteps)
+        print("self.maxsteps->",self.maxsteps)
         return 1 if self.steps>self.maxsteps else 0
     def _get_external_observe(self):
         raise NotImplementedError("")
