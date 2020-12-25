@@ -262,7 +262,8 @@ if __name__=="__main__":
     # taskname="sparse3"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
-    taskname="yw_insf_v11"
+    # taskname="yw_insf_v11"
+    taskname="D3Touch_v1"
     # taskname="yw_reach_v1img"
     env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4,gan_dgx=True)
 
@@ -273,7 +274,8 @@ if __name__=="__main__":
         loop+=1
         # print(loop)
         # action = actor.get_action()
-        action = np.random.uniform(-1,1,[3])#[0,0] # [up,right]
+        action=env1.action_space.sample()
+        # action = np.random.uniform(-1,1,[3])#[0,0] # [up,right]
         # print(action)
         # kuka
         # action = list(np.random.uniform(-1,1,7))

@@ -810,7 +810,7 @@ class base_task(object):
         raise NotImplementedError("")
     def _terminal_of_maxsteps(self):
 
-        print("self.maxsteps->",self.maxsteps)
+        # print("self.maxsteps->",self.maxsteps)
         return 1 if self.steps>self.maxsteps else 0
     def _get_external_observe(self):
         raise NotImplementedError("")
@@ -1133,17 +1133,6 @@ class yw_reach_v1img(yw_pick_v1img):
             return self._task_success()
         # else:
         return 0
-    def _task_success(self):
-        if (self.Task_Success_Updated):
-            return self.e.Task_Success
-        lego_contact = self.bullet_client.getContactPoints(self.RobotUid, self.my_items["lego"][0])
-        if(lego_contact):
-            self.e.Task_Success=1
-        else:
-            self.e.Task_Success=0
-        self.e.Task_Success_Updated=1
-        # reset in every step
-        return self.e.Task_Success
 
 #Task2: insert
 class yw_insert_v1img3cm(base_task):
@@ -3290,6 +3279,132 @@ class sparse4(sparse3):
             self.delayed=0
             return 1
         return 0
+
+# multi stage task
+class D3Touch_v1(yw_reach_v1img):
+    def __init__(self,env):
+
+        self.bsize=[0.02,0.02,0.02]
+        self.lego_touched=[0 for i in range(5)]
+        self.boxes_pos=[]
+
+        super(D3Touch_v1, self).__init__(env)
+        self.maxsteps=30
+    def _apply_action_to_sim(self,action):
+        assert len(action)==self.args.action_len
+        a=list(action)
+        a=a[:3]+[0,0,0]+[1]
+        return super(D3Touch_v1, self)._apply_action_to_sim(a)
+    def create_box_body(self,bsize,rgba):
+        box_vis = self.pyb.createVisualShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize,
+            rgbaColor=rgba)
+        box_col = self.pyb.createCollisionShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize)
+        box1 = self.bullet_client.createMultiBody(
+            baseMass=0,
+            basePosition=[0, 0, 0],
+            baseOrientation=[0, 0, 0, 1],
+            baseVisualShapeIndex=box_vis,
+            baseCollisionShapeIndex=box_col
+        )
+        return box1
+    def init_load_items(self):
+        self.m.load_a_standard_table()
+        self.env.maxsteps = 120
+
+        bsize=self.bsize
+        self.boxes_pos.append(
+            [-0.1,0.15,-0.45]
+        )
+
+
+        self.env.my_items["lego"].append(
+            self.create_box_body(bsize,[1,0,0,1])
+        )
+
+        kukaobjs = self.bullet_client.loadSDF(
+            os.path.join(pybullet_data.getDataPath(), "kuka_iiwa/kuka_with_gripper2.sdf"))
+        self.env.RobotUid = kukaobjs[0]
+        self.env.my_items["robot"].append(self.env.RobotUid)
+
+    def reset(self):
+        self.lego_touched = [0 for i in range(5)]
+        # print("reset!")
+        self.env.jointPositions = self.KUKA_DEFAULT_JP[:]
+        self.bullet_client.resetBasePositionAndOrientation(self.RobotUid,
+                                                           [0, 0, 0],
+                                                           [-0.707107, 0.0, 0.0, 0.707107])
+
+        self.env.numJoints = self.bullet_client.getNumJoints(self.RobotUid)
+        for jointIndex in range(self.numJoints):
+            self.bullet_client.resetJointState(self.RobotUid, jointIndex, self.jointPositions[jointIndex])
+        self.env.target_e_pose = ROBOT_ENDEFFECT_SAFE_POSE[:]
+        self.env.target_e_orn = self.bullet_client.getQuaternionFromEuler(ROBOT_ENDEFFECT_SAFE_ORN_EU[:])
+        for legoid in range(len(self.my_items["lego"])):
+            print(legoid)
+            self.bullet_client.resetBasePositionAndOrientation(self.my_items["lego"][legoid],
+                                                               self.boxes_pos[legoid], [1, 1, 1, 1])
+
+    def _reward(self):
+        return self._task_success()
+
+    def _task_success(self):
+        if (self.env.Task_Success_Updated):
+            return self.env.Task_Success
+
+        for legoid in range(len(self.boxes_pos)):
+            if self.lego_touched[legoid]==0:
+                lego_contact = len(self.bullet_client.getContactPoints(self.RobotUid, self.my_items["lego"][legoid]))
+                if legoid==0:
+                    self.lego_touched[legoid]+=lego_contact
+                elif self.lego_touched[legoid-1]>0:
+                    self.lego_touched[legoid] += lego_contact
+
+
+        print(self.lego_touched)
+        self.env.Task_Success=int(all(self.lego_touched[:len(self.boxes_pos)]))
+        self.env.Task_Success_Updated = 1
+        return self.env.Task_Success
+
+    def _terminal(self):
+        if self._terminal_of_maxsteps():
+            return 1
+        if self._table_collied():
+            return 1
+        if (self._task_success()):
+            return self._task_success()
+        # else:
+        return 0
+
+class D3Touch_v2(D3Touch_v1):
+    def __init__(self,env):
+        super(D3Touch_v2, self).__init__(env)
+
+        self.maxsteps=90
+    def init_load_items(self):
+        super(D3Touch_v2, self).init_load_items()
+
+        bsize=self.bsize
+        self.boxes_pos.append([0.3,0.15,-0.5])
+        self.env.my_items["lego"].append(
+            self.create_box_body(bsize,[0,1,0,1])
+        )
+
+
+class D3Touch_v3(D3Touch_v2):
+    def __init__(self,env):
+        super(D3Touch_v3, self).__init__(env)
+
+        self.maxsteps=120
+    def init_load_items(self):
+        super(D3Touch_v3, self).init_load_items()
+        self.boxes_pos.append([0.05,0.2,-0.7])
+        bsize=self.bsize
+        self.env.my_items["lego"].append(self.create_box_body(bsize,[0,0,1,1]))
+
 
 if __name__=="__main__":
     env="None"

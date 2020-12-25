@@ -1,0 +1,12 @@
+max_steps:
+
+img_size: [15,15]
+obs_shape: [15, 15]
+
+# gym
+action_low: -1
+action_high: 1
+action_len: 3
+
+# RIMRL
+#max_level: 80
