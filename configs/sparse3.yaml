@@ -1,7 +1,7 @@
 max_steps:
 
-img_size: [15,15]
-obs_shape: [15, 15]
+img_size: [64,64]
+obs_shape: [64, 64]
 
 # gym
 action_low: -1

@@ -263,7 +263,8 @@ if __name__=="__main__":
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
     # taskname="yw_insf_v11"
-    taskname="D3Touch_v1"
+    # taskname="D3Touch_v1"
+    taskname="sparse3"
     # taskname="yw_reach_v1img"
     env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4,gan_dgx=True)
 
