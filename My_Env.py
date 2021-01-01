@@ -71,13 +71,12 @@ class yw_robotics_env(gym.Env):
         base_dir = os.path.abspath(os.path.dirname(__file__))
 
         # if "yw_insd" in task:
-        yaml_name_dict=["yw_insd","yw_insf"]
-        if "yw_insd" in task:
-            yaml_name="yw_insd"
-        elif "yw_insf" in task:
-            yaml_name="yw_insf"
-        else:
-            yaml_name=task
+        yaml_name = task
+        yaml_name_dict=["yw_insd","yw_insf","yw_srw"]
+        for i in yaml_name_dict:
+            if i in task:
+                yaml_name=i
+
         # yaml_name="yw_insd" if "yw_insd" in task else task
         # yaml_name="yw_insf" if "yw_insf" in task else task
         yaml_f=os.path.join(base_dir, "configs/"+yaml_name+".yaml")
@@ -262,10 +261,9 @@ if __name__=="__main__":
     # taskname="sparse3"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
-    # taskname="yw_insf_v11"
-    # taskname="D3Touch_v1"
-    taskname="sparse3"
-    # taskname="yw_reach_v1img"
+    taskname="yw_insf_v1"
+    taskname="yw_srw_v1"
+
     env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4,gan_dgx=True)
 
     loop=0
@@ -297,7 +295,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        env1.render()
+        # env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":
