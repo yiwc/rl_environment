@@ -2791,8 +2791,8 @@ class yw_insf(yw_insd):
             noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
             noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
         elif level in [11, 12, 13]:
-            mxyz = 0.04
-            mrpy = 0.04
+            mxyz = 0.03
+            mrpy = 0.03
             s = 0.5
             noise_0 = np.random.uniform(-s * mrpy, s * mrpy, [3])
             noise_0[2] = 0  # Robust 1

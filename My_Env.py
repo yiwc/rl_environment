@@ -261,10 +261,10 @@ if __name__=="__main__":
     # taskname="sparse3"
     # taskname="yw_insd_v10"
     # taskname="yw_insd_v14"
-    taskname="yw_insf_v1"
-    taskname="yw_srw_v1"
+    taskname="yw_insf_v13"
+    # taskname="yw_srw_v1"
 
-    env1 = yw_robotics_env(taskname, DIRECT=0,gan_srvs=4,gan_dgx=True)
+    env1 = yw_robotics_env(taskname, DIRECT=1,gan_srvs=4,gan_dgx=True)
 
     loop=0
     # action=[0,0]

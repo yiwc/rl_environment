@@ -6,11 +6,11 @@ single_img_size: [128, 128]
 obs_shape: [128,256]
 
 # camera 1
-fov: 19
+fov: 11
 camera_shitft_xyz: [0.04,0.1,0.07] # red green blue
 #camera_shift_rpy: [0,2,3] # _ pitch _
 # camera 2
-fov2: 19
+fov2: 11
 camera_shitft_xyz2: [-0.04,0.1,0.07]
 #camera_shift_rpy_2: [0,2,2.7]
 
