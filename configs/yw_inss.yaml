@@ -20,7 +20,7 @@ action_default_vel_scale: 1 #
 # Done
 casecoli_done: 15 # Done after already colids case x steps
 
-obs_shape: 10
+obs_shape: 12
 action_low: -1
 action_high: 1
 action_len: 2

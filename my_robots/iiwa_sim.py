@@ -3667,6 +3667,73 @@ class yw_inss(yw_srw):
         return pos  # state[4] is the worldLinkFramePosition
     def rt20_(self,*args):
         pass
+
+    def get_fake_detect_points(self,cam_observe_img):
+
+        img=cam_observe_img
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        red_mask = cv2.inRange(img, (0, 0, 50), (10, 10, 255))
+        green_mask = cv2.inRange(img, (0, 150, 0), (10, 255, 10))
+
+        kernel = np.ones((7, 7), np.uint8)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel)
+        kernel = np.ones((5, 5), np.uint8)
+        green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_CLOSE, kernel)
+
+        def get_contours(img):
+            ret, thresh = cv2.threshold(img, 127, 255, 0)
+            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            return contours
+
+        def get_mass_centroid(contours):
+            contours = contours.copy()
+            centroids = []
+            total_points = 0
+            for cnt in contours:
+                # cnt = contours[0]
+                M = cv2.moments(cnt)
+                pts = len(cnt)
+                total_points += pts
+                cx = int(M['m10'] / M['m00']) * pts
+                cy = int(M['m01'] / M['m00']) * pts
+                centroids.append([cx, cy])
+            return (np.array(centroids).sum(0) / total_points).tolist()
+
+        def get_minmax_centroid(contours):
+            contours = contours.copy()
+            centroids = []
+            total_points = 0
+            maxx = maxy = 0
+            minx = miny = 1e5
+            for cnt in contours:
+                # cnt = contours[0]
+                M = cv2.moments(cnt)
+                pts = len(cnt)
+                total_points += pts
+                np_cnt = np.array(cnt)
+                maxxy = np_cnt.max(0).squeeze().tolist()
+                minxy = np_cnt.min(0).squeeze().tolist()
+                maxx = maxxy[0] if maxxy[0] > maxx else maxx
+                maxy = maxxy[1] if maxxy[1] > maxy else maxy
+                minx = minxy[0] if minxy[0] < minx else minx
+                miny = minxy[1] if minxy[1] < miny else miny
+
+                # cx = int(M['m10'] / M['m00'])*pts
+                # cy = int(M['m01'] / M['m00'])*pts
+                # centroids.append([cx,cy])
+
+            res = [int((maxx + minx) / 2), int((maxy + miny) / 2)]
+            # res=int((maxx+minx)/2)
+            return res  # (np.array(centroids).sum(0)/total_points).tolist()
+
+        contours_green = get_contours(green_mask)
+        contours_red = get_contours(red_mask)
+
+        center_green = get_minmax_centroid(contours_green)
+        center_red = get_minmax_centroid(contours_red)
+
+        return center_green,center_red
+
     def _get_external_observe(self):
 
         level = self.l
@@ -3675,7 +3742,7 @@ class yw_inss(yw_srw):
         ee_pose, ee_orn = self.get_end_effect_pos_orn_calibrated()
 
         # Robust 1 2
-        if (level in [4, 5, 6, 7, 8, 9, 10]):
+        if (level in [1,2,3, 4, 5, 6, 7, 8, 9, 10]):
             mxyz = 0.02
             mrpy = 0.02
             s = level / 10
@@ -3685,11 +3752,11 @@ class yw_inss(yw_srw):
             noise_1[2] = 0  # robust 1
             noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
             noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
-        elif level in [1, 2, 3]:
-            noise_0 = self.noise_0_from_reset
-            noise_1 = self.noise_1_from_reset
-            noise_xyz_0 = np.array([0, 0, 0])
-            noise_xyz_1 = np.array([0, 0, 0])
+        # elif level in [1, 2, 3]:
+        #     noise_0 = self.noise_0_from_reset
+        #     noise_1 = self.noise_1_from_reset
+        #     noise_xyz_0 = np.array([0, 0, 0])
+        #     noise_xyz_1 = np.array([0, 0, 0])
 
         # Robust 3
         if (level in [4, 5, 6, 7, 8, 9, 10]):
@@ -3718,7 +3785,7 @@ class yw_inss(yw_srw):
         # cam 1
         bolt_tap_pos = self.get_bolt_pose()
         get_bolt_tap_pose = self.get_bolt_tap_pose()
-        print(bolt_tap_pos)
+        # print(bolt_tap_pos)
         self._set_box(get_bolt_tap_pose,0)
 
 
@@ -3745,16 +3812,60 @@ class yw_inss(yw_srw):
         img0 = self.rt23_(level, img0)
         img1 = self.rt23_(level, img1)
 
-        self.z_save_img(level, img0)
-        self.z_save_img(level, img1)
+        # self.z_save_img(level, img0)
+        # self.z_save_img(level, img1)
 
-        # cv2.im
-        cv2.imwrite("test.jpg",img0)
-        # img0[3:]=0
+
+        center_green_cam0,center_red_cam0=self.get_fake_detect_points(img0)
+        center_green_cam1,center_red_cam1=self.get_fake_detect_points(img1)
+
+        c_green_cam0=np.random.uniform(1,0,1)[0]
+        c_red_cam0=np.random.uniform(1,0,1)[0]
+        c_green_cam1=np.random.uniform(1,0,1)[0]
+        c_red_cam1=np.random.uniform(1,0,1)[0]
+
+        fake_detect_noise=10
+        center_green_cam0=np.array(center_green_cam0) + np.random.uniform( -1, 1,2) * (1 - c_green_cam0) * fake_detect_noise
+        center_red_cam0=np.array(center_red_cam0) + np.random.uniform(-1, 1,2) * (1 - c_red_cam0) * fake_detect_noise
+        center_green_cam1=np.array(center_green_cam1) + np.random.uniform(-1, 1,2) * (1 - c_green_cam1) * fake_detect_noise
+        center_red_cam1=np.array(center_red_cam1) + np.random.uniform(-1, 1,2) * (1 - c_red_cam1) * fake_detect_noise
+
+        # center_green_cam0=
+        #
+        #
+        # , c_green_cam0, c_red_cam0
+        # , c_green_cam1, c_red_cam1
+
+        imgmaxs=img0.shape[0]
+        observe=[
+            center_green_cam0[0],#x, from left to rgiht
+            center_green_cam0[1],#y, from top to bottom
+            center_red_cam0[0],
+            center_red_cam0[1],
+            center_green_cam1[0],
+            center_green_cam1[1],
+            center_red_cam1[0],
+            center_red_cam1[1],
+        ]
+        observe=list(map(lambda x:float(x)*2/imgmaxs-1,observe))
+        confidence=[c_green_cam0,c_red_cam0,c_green_cam1,c_red_cam1] #0 -> 100%
+        confidence=list(map(lambda x:float(x)*2-1,confidence))
+
+        all_observes=observe+confidence
+
+        img0 = cv2.circle(img0, tuple(map(lambda x: int(x), center_green_cam0)), 3, (0, 255, 255), -1)
+        img0 = cv2.circle(img0, tuple(map(lambda x: int(x), center_red_cam0)), 3, (0, 255, 255), -1)
+
+        img1 = cv2.circle(img1, tuple(map(lambda x: int(x), center_green_cam1)), 3, (0, 255, 255), -1)
+        img1 = cv2.circle(img1, tuple(map(lambda x: int(x), center_red_cam1)), 3, (0, 255, 255), -1)
+
         cat_img = self.z_fuse_img(img0, img1)
         cat_img = np.transpose(cat_img, [2, 0, 1])
         self.images[0] = cat_img
-        return self.images[0]
+        # print("all_observe",all_observes)
+        return all_observes
+        # return self.images[0]
+
 
     def init_load_items(self):
         self.JacoCartEEIndex=2 #?

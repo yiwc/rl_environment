@@ -249,7 +249,7 @@ if __name__=="__main__":
     # saver=img_save(10000)
     # env1 = yw_robotics_env("yw_insert_v1img3cm", DIRECT=0)
 
-    taskname="yw_inss_v1"
+    taskname="yw_inss_v9"
     env1 = yw_robotics_env(taskname, DIRECT=0, gan_srvs=1, gan_dgx=True, gan_port=5660)
 
     loop=0
