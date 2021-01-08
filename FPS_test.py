@@ -14,7 +14,7 @@ def make_env():
 if __name__=="__main__":
 
 
-    taskname="yw_insf_v9"
+    taskname="yw_inss_v10"
 
     # env1 = yw_robotics_env(taskname, DIRECT=1,gan_srvs=4)
     num_cpu = 20

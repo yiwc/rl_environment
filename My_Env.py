@@ -72,7 +72,7 @@ class yw_robotics_env(gym.Env):
 
         # if "yw_insd" in task:
         yaml_name = task
-        yaml_name_dict=["yw_insd","yw_insf","yw_srw"]
+        yaml_name_dict=["yw_insd","yw_insf","yw_srw","yw_inss"]
         for i in yaml_name_dict:
             if i in task:
                 yaml_name=i
@@ -137,8 +137,12 @@ class yw_robotics_env(gym.Env):
         # gym
 
         if self.args is not None:
-            self.observation_space = spaces.Box(0, 255, shape=(3,*self.args.obs_shape), dtype='float32')
-            self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
+            try:
+                self.observation_space,self.action_space=self.Env.get_spaces()
+            except Exception as err:
+                print(err)
+                self.observation_space = spaces.Box(0, 255, shape=(3,*self.args.obs_shape), dtype='float32')
+                self.action_space = spaces.Box(self.args.action_low,self.args.action_high, shape=(self.args.action_len,), dtype='float32')
             self.viewer = None
 
 
@@ -176,8 +180,6 @@ class yw_robotics_env(gym.Env):
 
     def __getattr__(self, name):
         return getattr(self.Env, name)
-
-
 def show_exp(task,expid):
     task = task
     env1 = yw_robotics_env(task, DIRECT=0)
@@ -202,8 +204,6 @@ def show_exp(task,expid):
     while (1):
         print("结束")
         time.sleep(1)
-
-
 def show_save_id_reverse(task,expid):
     task = task
     env1 = yw_robotics_env(task, DIRECT=0)
@@ -248,43 +248,20 @@ if __name__=="__main__":
     # actor.set_controller(xboxCont)
     # saver=img_save(10000)
     # env1 = yw_robotics_env("yw_insert_v1img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v2img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v3img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_v4img3cm", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_g1img", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insert_g1bimg", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insd_v7", DIRECT=0)
-    # env1 = yw_robotics_env("yw_insd_v13", DIRECT=0)
-    # taskname="yw_insert_g1cimg"
-    # taskname="yw_insert_v4img3cm"
-    # taskname="yw_insert_g1cimg"
-    # taskname="sparse3"
-    # taskname="yw_insd_v10"
-    # taskname="yw_insd_v14"
-    taskname="yw_insf_v13"
-    # taskname="yw_srw_v1"
 
-    env1 = yw_robotics_env(taskname, DIRECT=1,gan_srvs=4,gan_dgx=True)
+    taskname="yw_inss_v1"
+    env1 = yw_robotics_env(taskname, DIRECT=0, gan_srvs=1, gan_dgx=True, gan_port=5660)
 
     loop=0
     # action=[0,0]
     ret=0
     while(True):
         loop+=1
-        # print(loop)
-        # action = actor.get_action()
+        print(loop)
         action=env1.action_space.sample()
-        # action = np.random.uniform(-1,1,[3])#[0,0] # [up,right]
-        # print(action)
-        # kuka
-        # action = list(np.random.uniform(-1,1,7))
-        obs, rew, done, info=env1.step(action) # env1.step(np.random.random([2])-0.3)
+        action=[0,0]
+        obs, rew, done, info=env1.step(action)
 
-        ##insert
-        # action = actor.get_action()
-        # obs, rew, done, info=env1.step(action[0:2]) # env1.step(np.random.random([2])-0.3)
-        # print(stps)
-        # print(rew)
         ret+=rew
         if(done):
             print("ret=",ret," || avret=",ret/loop)
@@ -295,7 +272,7 @@ if __name__=="__main__":
         if(done):
             print("Finished!")
 
-        # env1.render()
+        env1.render()
 
 # Exp Recording Scripts
 # if __name__=="__main__":

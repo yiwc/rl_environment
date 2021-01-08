@@ -8,6 +8,7 @@ import pickle
 import copy
 import shutil
 import cv2
+from gym import spaces
 # import gym
 # from keras.models import load_model
 # from keras_contrib.layers.normalization.instancenormalization import InstanceNormalization
@@ -125,10 +126,15 @@ class TimeStep(object):
 class PandaSim(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("the simulator has closed!")
-    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment",gan_srvs=1,gan_dgx=False,**kwargs):
+    def __init__(self, bullet_client,Task,args,root_folder_name="rl_environment",
+                 gan_srvs=1,
+                 gan_dgx=False,
+                 gan_port=5600,
+                 **kwargs):
         print("YOURTASK=",Task)
 
         self.gan_srvs=gan_srvs
+        self.gan_port=gan_port
         self.gan_dgx=gan_dgx
         self.root_folder_name=root_folder_name
 
@@ -179,7 +185,7 @@ class PandaSim(object):
 
         # from my_robots.task import sparse3
 
-        auto_vs=["yw_insd","yw_insf","yw_srw"]
+        auto_vs=["yw_insd","yw_insf","yw_srw","yw_inss"]
         for i in auto_vs:
             if i in name:
                 n=i
@@ -608,9 +614,12 @@ class PandaSim(object):
 
         self.sabs=[]
         self.sbas=[]
-        ptab=5600
-        ptba=5601
+        ptab=int(self.gan_port)
+        ptba=ptab+1
         for i in range(self.gan_srvs):
+
+            print("portab->",ptab)
+            print("portba->",ptba)
             q=self.context.socket(zmq.REQ)
             q.connect("tcp://{}:".format(ip)+str(ptab))
             self.sabs.append(q)
@@ -777,7 +786,7 @@ class PandaSim(object):
                 self.save_img_counter=0
 
 
-            imgpth=self.img_dirpth+"/simtask13_{}.png".format(self.save_img_counter)
+            imgpth=self.img_dirpth+"/{}_simtask13_{}.png".format(str(int(time.time())),self.save_img_counter)
             cv2.imwrite(imgpth,cv2.cvtColor(img,cv2.COLOR_RGB2BGR))
             print("saved!"+imgpth)
     def __getattr__(self, item):
@@ -2199,7 +2208,7 @@ class yw_insd(yw_insert_v1img3cm):
             noise_1[2] = 0  # robust 1
             noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
             noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
-        elif level in [14,15]:
+        elif level in [14,15, 16]:
             noise_0 = self.cam_target_noise_0_from_reset
             noise_1 = self.cam_target_noise_1_from_reset
             noise_xyz_0 = self.cam_pos_noise_1_from_reset#np.array([0, 0, 0])
@@ -2367,7 +2376,7 @@ class yw_insd(yw_insert_v1img3cm):
             # noise_1[2]=0
             self.noise_0_from_reset = noise_0
             self.noise_1_from_reset = noise_1
-        elif level in [14,15]:
+        elif level in [14,15, 16]:
             max_translation = 0.01  # meter
             n1 = np.random.uniform(-max_translation, max_translation, [3])
             n2 = np.random.uniform(-max_translation, max_translation, [3])
@@ -2611,15 +2620,6 @@ class yw_insf(yw_insd):
         pos[1] += 0.01
         pos[0] -= 0.01
 
-        # pos[1] += 0.1
-        #
-        #
-        # # Only For Kinova Robut with Bolt
-        # state = self.bullet_client.getLinkState(self.RobotUid, self.BoltBodyIndex)
-        # pos=list(state[4])
-        # pos[2]+=0.3
-
-
         return  pos# state[4] is the worldLinkFramePosition
 
     def init_load_items(self):
@@ -2630,7 +2630,6 @@ class yw_insf(yw_insd):
         self.e.target_e_pose=[0.2,0.36,-1] # ?
         self.e.target_e_orn=self.p.getQuaternionFromEuler([0,0,0]) # ?
         self.JacoCart_reset_jp=[[0], [0], [0], [1.3], [1.3], [1.3]]
-
 
         self.m.load_a_standard_table()
 
@@ -2644,38 +2643,6 @@ class yw_insf(yw_insd):
             self.e.viewers = [rendering.SimpleImageViewer(), rendering.SimpleImageViewer()]
         except:
             pass
-
-        # self.p.addUserDebugParameter("test",1,2,0)
-        # self.debug_p0 = self.p.addUserDebugParameter("eep0", 0.2, +0.5, 0.309)
-        # self.debug_p1 = self.p.addUserDebugParameter("eep1", 0.2, 0.6, 0.406)
-        # self.debug_p2 = self.p.addUserDebugParameter("eep2", -1, -0.3, -0.7)
-        # self.debug_c1x = self.p.addUserDebugParameter("cx", -0.3, 0.3, 0.04)
-        # self.debug_c1y = self.p.addUserDebugParameter("cy", -0.3, 0.3, 0.1)
-        # self.debug_c1z = self.p.addUserDebugParameter("cz", -0.3, 0.3, 0.05)
-        # self.debug_c2x = self.p.addUserDebugParameter("cx2", -0.3, 0.3, -0.04)
-        # self.debug_c2y = self.p.addUserDebugParameter("cy2", -0.3, 0.3, 0.1)
-        # self.debug_c2z = self.p.addUserDebugParameter("cz2", -0.3, 0.3, 0.05)
-        # self.debug_fov = self.p.addUserDebugParameter("fov", 0, 50, 25)
-        # self.debug_b1 = self.p.addUserDebugParameter("b1", 0, 1, 0.61)
-        # self.debug_b2 = self.p.addUserDebugParameter("b2", 0, 1, 0.82)
-        # self.debug_b3 = self.p.addUserDebugParameter("b3", -2, -1, -1)
-
-        # self.dbg_b1=self.p.addUserDebugParameter("b1",0.5,0.9,0.61)
-        # self.dbg_b2=self.p.addUserDebugParameter("b2",0.5,0.9,0.82)
-        # self.dbg_b3=self.p.addUserDebugParameter("b3",-1.1,-0.9,-1)
-
-        # self.dbg_jp1=self.p.addUserDebugParameter("jp1",-1,1,0)
-        # self.dbg_jp2=self.p.addUserDebugParameter("jp2",-1,1,0)
-        # self.dbg_jp3=self.p.addUserDebugParameter("jp3",-1,1,0)
-        # self.dbg_jp4=self.p.addUserDebugParameter("jp4",-1,1,0)
-        # self.dbg_jp5=self.p.addUserDebugParameter("jp5",-1,1,0)
-        # self.dbg_jp6=self.p.addUserDebugParameter("jp6",-1,1,0)
-        # self.t1=self.p.addUserDebugParameter("t1",-1,1,0.2)
-        # self.t2=self.p.addUserDebugParameter("t2",-1,1,0.36)
-        # self.t3=self.p.addUserDebugParameter("t3",-1,1,-1)
-        # self.t4=self.p.addUserDebugParameter("t4",-3,1,-1.57)
-        # self.t5=self.p.addUserDebugParameter("t5",-1,5,1.57)
-        # self.t6=self.p.addUserDebugParameter("t6",-1,1,0)
 
         case_xyz = np.array([0.25, 0.3, -0.4])
         hole1_shiftxyz = np.array([0.112, 0.17, -0.03])
@@ -2693,13 +2660,13 @@ class yw_insf(yw_insd):
         csig_euler = [3.14 / 2, 3.14, 0]
         csig_qorn = self.bullet_client.getQuaternionFromEuler(csig_euler)
 
-        if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14, 15]:  # Robust 4
+        if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14, 15,16]:  # Robust 4
             self.e.my_items["case_sig"].append(self.bullet_client.loadURDF(case_sig_ring_urdf,
                                                                          case_xyz + hole1_shiftxyz,
                                                                          csig_qorn,
                                                                          flags=self.flags))
         # Robust 8
-        if level in [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]:
+        if level in [6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16]:
             self._loadstuff_tv()
 
         # load detect shape
@@ -2716,9 +2683,6 @@ class yw_insf(yw_insd):
             height=idet1_size[1],
             radius=idet1_size[0])
 
-        # self.bullet_client.changeVisualShape(
-        #     idet1_visual,0,rgbaColor=[1,0,0,1]
-        # )
 
         self.e.pos_insert_detect1 = case_xyz + idet1_shiftxyz
         self.e.insert_detect1 = self.bullet_client.createMultiBody(
@@ -2745,6 +2709,7 @@ class yw_insf(yw_insd):
         self.bullet_client.changeVisualShape(jacoobjs,1,rgbaColor=[0,0,0,1])
 
         self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0,0,0,1])
+        # self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0,0,0,1])
         # self.bullet_client.changeVisualShape(jacoobjs,3,rgbaColor=[0,0,0,0])
         # self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0,0,0,0])
         # self.bullet_client.changeVisualShape(jacoobjs,3,rgbaColor=[0,0,0,0])
@@ -2800,7 +2765,7 @@ class yw_insf(yw_insd):
             noise_1[2] = 0  # robust 1
             noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
             noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
-        elif level in [14,15]:
+        elif level in [14,15,16]:
             noise_0 = self.cam_target_noise_0_from_reset
             noise_1 = self.cam_target_noise_1_from_reset
             noise_xyz_0 = self.cam_pos_noise_1_from_reset#np.array([0, 0, 0])
@@ -2816,7 +2781,7 @@ class yw_insf(yw_insd):
             mfov = (level - 3) / 2
             fov_noise_1 = np.random.uniform(-mfov, mfov, 1)[0]
             fov_noise_2 = np.random.uniform(-mfov, mfov, 1)[0]
-        elif level in [11, 12, 13]:
+        elif level in [11, 12, 13, 16]:
             mfov = 0.5
             fov_noise_1 = np.random.uniform(-mfov, mfov, 1)[0]
             fov_noise_2 = np.random.uniform(-mfov, mfov, 1)[0]
@@ -2824,52 +2789,26 @@ class yw_insf(yw_insd):
             fov_noise_1 = 0
             fov_noise_2 = 0
 
-        # Robust 5
-        if level in [1, 2, 4, 5, 9]:
-            if level in [1, 6]:
-                front_color_alpha = 1
-            else:
-                front_color_alpha = 0
-            front_color_rgb = self.get_random_rgb()
-            front_color = front_color_rgb + [front_color_alpha]
-            self.bullet_client.changeVisualShape(self.my_items["case_sig"][0], 0, rgbaColor=front_color)
+        # # Robust 5
+        # if level in [1, 2, 4, 5, 9]:
+        #     if level in [1, 6]:
+        #         front_color_alpha = 1
+        #     else:
+        #         front_color_alpha = 0
+        #     front_color_rgb = self.get_random_rgb()
+        #     front_color = front_color_rgb + [front_color_alpha]
+        #     self.bullet_client.changeVisualShape(self.my_items["case_sig"][0], 0, rgbaColor=front_color)
 
-        # Robust 7
-        if level in [4, 5, 6, 7, 8, 9, 10]:
-            if level in [4, 5, 6]:
-                # random robot color
-                tip_color = (np.random.random([4]) - 0.5) * 0.1 + np.array([0.8, 0.8, 0.8, 1])
-                tip_color[3] = 1
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 7, rgbaColor=tip_color)
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 8, rgbaColor=tip_color)
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 9, rgbaColor=tip_color)
-
-                bolt_color = (np.random.random([4]) - 0.5) * 0.2 + np.array([0.2, 0.2, 0.2, 1])
-                bolt_color[3] = 1
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 6, rgbaColor=bolt_color)
-
-                case_color = np.array([0.8, 0.2, 0.2, 1]) + (np.random.random([4]) - 0.5) * 0.5
-                case_color[3] = 1
-                self.bullet_client.changeVisualShape(self.my_items["case"][0], 0, rgbaColor=case_color)
-            elif level in [7, 8, 9, 10]:
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 7,
-                                                     rgbaColor=self.get_random_color())
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 8,
-                                                     rgbaColor=self.get_random_color())
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 9,
-                                                     rgbaColor=self.get_random_color())
-                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 6,
-                                                     rgbaColor=self.get_random_color())
-                self.bullet_client.changeVisualShape(self.my_items["case"][0], 0, rgbaColor=self.get_random_color())
+        self.rt7_(level)
 
         # Robust 6
-        if level in [4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+        if level in [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16]:
             self.bullet_client.configureDebugVisualizer(lightPosition=[np.random.uniform(0, 3),
                                                                        np.random.uniform(0, 3),
                                                                        np.random.uniform(0, -5)])
 
         # Robust 9
-        if level in [6, 7, 8, 9, 10, 11,12,13]:
+        if level in [6, 7, 8, 9, 10, 11,12,13, 16]:
             self.bullet_client.changeVisualShape(self.tv, -1, textureUniqueId=random.choice(self.bg_textures))
         elif level in [14,15]:
             random.seed(self.reset_times)
@@ -2950,7 +2889,7 @@ class yw_insf(yw_insd):
             # noise_1[2]=0
             self.noise_0_from_reset = noise_0
             self.noise_1_from_reset = noise_1
-        elif level in [14,15]:
+        elif level in [14,15, 16]:
             max_translation = 0.01  # meter
             n1 = np.random.uniform(-max_translation, max_translation, [3])
             n2 = np.random.uniform(-max_translation, max_translation, [3])
@@ -3026,12 +2965,46 @@ class yw_insf(yw_insd):
     # Robust Tools Box (call to make change to env)
     def rt1_(self):
         pass
+    def rt7_(self,level):
+
+        if level in [11,12,13, 16,14,15]:
+            tip_color = [0,0,0,0]
+            self.bullet_client.changeVisualShape(self.my_items["robot"][0], 3, rgbaColor=tip_color)
+            self.bullet_client.changeVisualShape(self.my_items["robot"][0], 4, rgbaColor=tip_color)
+            self.bullet_client.changeVisualShape(self.my_items["robot"][0], 5, rgbaColor=tip_color)
+
+        if level in [4, 5, 6, 7, 8, 9, 10]:
+            if level in [4, 5, 6]:
+                # random robot color
+                tip_color = (np.random.random([4]) - 0.5) * 0.1 + np.array([0.8, 0.8, 0.8, 1])
+                tip_color[3] = 1
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 7, rgbaColor=tip_color)
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 8, rgbaColor=tip_color)
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 9, rgbaColor=tip_color)
+
+                bolt_color = (np.random.random([4]) - 0.5) * 0.2 + np.array([0.2, 0.2, 0.2, 1])
+                bolt_color[3] = 1
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 6, rgbaColor=bolt_color)
+
+                case_color = np.array([0.8, 0.2, 0.2, 1]) + (np.random.random([4]) - 0.5) * 0.5
+                case_color[3] = 1
+                self.bullet_client.changeVisualShape(self.my_items["case"][0], 0, rgbaColor=case_color)
+            elif level in [7, 8, 9, 10]:
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 7,
+                                                     rgbaColor=self.get_random_color())
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 8,
+                                                     rgbaColor=self.get_random_color())
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 9,
+                                                     rgbaColor=self.get_random_color())
+                self.bullet_client.changeVisualShape(self.my_items["robot"][0], 6,
+                                                     rgbaColor=self.get_random_color())
+                self.bullet_client.changeVisualShape(self.my_items["case"][0], 0, rgbaColor=self.get_random_color())
 
     def rt11_(self, l):
         assert len(self.my_items["insert_detect"]) > 0
         # insert detect color change
         # if l ==1:
-        if l in [11,12,13,14,15]:
+        if l in [11,12,13, 16,14,15]:
             c = [1, 1, 0, 1]
         else:
             c = [0, 0, 0, 0]
@@ -3122,7 +3095,7 @@ class yw_insf(yw_insd):
             s = level / 10 * 0.6 + 0.4
             # if level==1:
             #     s=0
-        elif level in [11, 12, 13]:
+        elif level in [11, 12, 13, 16]:
             s = 1 #0.5
         elif level in [14,15]:
             s = 1
@@ -3138,6 +3111,10 @@ class yw_insf(yw_insd):
         #             self.p.readUserDebugParameter(self.dbg_b2),
         #             self.p.readUserDebugParameter(self.dbg_b3)]
         # pose_noise = (np.random.random([3]) - 0.5) * 0.02
+        # if level in [13]:
+        #     noises=[]
+        #     noises.append(pose_noise)
+        # else:
         pose_noise = np.random.uniform(-1,1,3)*0.02
         pose_noise[2] = 0
         base_new = np.array(base_new) + pose_noise * s #+[0,0,0.1]
@@ -3179,7 +3156,7 @@ class yw_insf(yw_insd):
             d = 0.8
             s = (l - 3) / 7 * self.rtscale_21
             maxd = 0.5
-        elif l in [11, 12, 13]:
+        elif l in [11, 12, 13, 16]:
             d = 0.8
             s = 0.2
             maxd = 0.5
@@ -3239,9 +3216,37 @@ class yw_insf(yw_insd):
         self.bullet_client.resetBasePositionAndOrientation(self.RobotUid, xyz,self.p.getQuaternionFromEuler(orn))
 
 #Task2.2: FAST SCREW
+
 class yw_srw(yw_insf):
     def __init__(self,env,level):
+
+        self.env=env
+        self.env.line_debug_mode=False
+        # select task hole
+        self.env.hole_id=1
+
+        self.env._case_center=np.array([0.25, 0.3, -0.4])
+        self.env._maxreward_ee2hole=[0.0170, -0.0195,0]
+        self.env._jacobase2hole=[-0.093, -0.05 , -0.59 ]
+        self.env._hole_centers=[
+            self.env._case_center + np.array([0.06, 0.12, -0.01]),
+            self.env._case_center + np.array([-0.06, 0.12, -0.01]),
+            self.env._case_center + np.array([-0.095, 0, -0.01]),
+            self.env._case_center + np.array([-0.06, -0.125, -0.01]),
+            self.env._case_center + np.array([0.06, -0.125, -0.01]),
+            self.env._case_center + np.array([0.095, 0, -0.01]),
+            ]
+
+        self.env._hole_center=self.env._hole_centers[self.env.hole_id]
+        self.env._hole_detector=self.env._hole_center+[0,0,-0.01]
+        self.env._pos_ee_max_reward = self.env._hole_center + self.env._maxreward_ee2hole  # max end effector pos
+        self.env._pos_jaco_base_reset = self.env._hole_center + self.env._jacobase2hole
+
         super(yw_srw, self).__init__(env,level)
+        # self.env.max_reward_line_pos=[0.3270845, 0.4004679]
+
+        # self.env.maxsteps=30
+        self.env.JacoCart_BasePos=self.env._pos_jaco_base_reset
 
     def init_load_items(self):
         self.JacoCartEEIndex=2 #?
@@ -3259,44 +3264,13 @@ class yw_srw(yw_insf):
         level = self.l
         if level in [11, 12,14,15]:
             self._init_GAN()
-        self.e.maxsteps = 40
+        self.e.maxsteps = 30
         self.e.images = [None, None]
         try:
             self.e.viewers = [rendering.SimpleImageViewer(), rendering.SimpleImageViewer()]
         except:
             pass
 
-        # self.p.addUserDebugParameter("test",1,2,0)
-        # self.debug_p0 = self.p.addUserDebugParameter("eep0", 0.2, +0.5, 0.309)
-        # self.debug_p1 = self.p.addUserDebugParameter("eep1", 0.2, 0.6, 0.406)
-        # self.debug_p2 = self.p.addUserDebugParameter("eep2", -1, -0.3, -0.7)
-        # self.debug_c1x = self.p.addUserDebugParameter("cx", -0.3, 0.3, 0.04)
-        # self.debug_c1y = self.p.addUserDebugParameter("cy", -0.3, 0.3, 0.1)
-        # self.debug_c1z = self.p.addUserDebugParameter("cz", -0.3, 0.3, 0.05)
-        # self.debug_c2x = self.p.addUserDebugParameter("cx2", -0.3, 0.3, -0.04)
-        # self.debug_c2y = self.p.addUserDebugParameter("cy2", -0.3, 0.3, 0.1)
-        # self.debug_c2z = self.p.addUserDebugParameter("cz2", -0.3, 0.3, 0.05)
-        # self.debug_fov = self.p.addUserDebugParameter("fov", 0, 50, 25)
-        # self.debug_b1 = self.p.addUserDebugParameter("b1", 0, 1, 0.61)
-        # self.debug_b2 = self.p.addUserDebugParameter("b2", 0, 1, 0.82)
-        # self.debug_b3 = self.p.addUserDebugParameter("b3", -2, -1, -1)
-
-        # self.dbg_b1=self.p.addUserDebugParameter("b1",0.5,0.9,0.61)
-        # self.dbg_b2=self.p.addUserDebugParameter("b2",0.5,0.9,0.82)
-        # self.dbg_b3=self.p.addUserDebugParameter("b3",-1.1,-0.9,-1)
-
-        # self.dbg_jp1=self.p.addUserDebugParameter("jp1",-1,1,0)
-        # self.dbg_jp2=self.p.addUserDebugParameter("jp2",-1,1,0)
-        # self.dbg_jp3=self.p.addUserDebugParameter("jp3",-1,1,0)
-        # self.dbg_jp4=self.p.addUserDebugParameter("jp4",-1,1,0)
-        # self.dbg_jp5=self.p.addUserDebugParameter("jp5",-1,1,0)
-        # self.dbg_jp6=self.p.addUserDebugParameter("jp6",-1,1,0)
-        # self.t1=self.p.addUserDebugParameter("t1",-1,1,0.2)
-        # self.t2=self.p.addUserDebugParameter("t2",-1,1,0.36)
-        # self.t3=self.p.addUserDebugParameter("t3",-1,1,-1)
-        # self.t4=self.p.addUserDebugParameter("t4",-3,1,-1.57)
-        # self.t5=self.p.addUserDebugParameter("t5",-1,5,1.57)
-        # self.t6=self.p.addUserDebugParameter("t6",-1,1,0)
 
         case_xyz = np.array([0.25, 0.3, -0.4])
         hole1_shiftxyz = np.array([0.112, 0.17, -0.03])
@@ -3307,26 +3281,27 @@ class yw_srw(yw_insf):
         self.e.idet1_shiftxyz = idet1_shiftxyz
         # load case
         case_urdf = os.path.join(self._get_model_rootdir(), "objects", "case_hole_detect.urdf")
-        # case_urdf = os.path.join(self._get_model_rootdir(),"objects","case.urdf")
-        self.e.my_items["case"].append(self.bullet_client.loadURDF(case_urdf, case_xyz, [0, 0, 1, 1], flags=self.flags))
 
-        case_sig_ring_urdf = os.path.join(self._get_model_rootdir(), "objects", "case_sig_ring_front1.urdf")
+        self.e.my_items["case"].append(
+            self.bullet_client.loadURDF(
+            case_urdf,
+            case_xyz,
+            [0, 0, 1, 1],
+            flags=self.flags))
+
         csig_euler = [3.14 / 2, 3.14, 0]
-        csig_qorn = self.bullet_client.getQuaternionFromEuler(csig_euler)
 
-        if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14, 15]:  # Robust 4
-            self.e.my_items["case_sig"].append(self.bullet_client.loadURDF(case_sig_ring_urdf,
-                                                                         case_xyz + hole1_shiftxyz,
-                                                                         csig_qorn,
-                                                                         flags=self.flags))
+        # if level not in [3, 6, 7, 8, 10, 11, 12, 13, 14, 15]:  # Robust 4
+        #     self.e.my_items["case_sig"].append(self.bullet_client.loadURDF(case_sig_ring_urdf,
+        #                                                                  case_xyz + hole1_shiftxyz,
+        #                                                                  csig_qorn,
+        #                                                                  flags=self.flags))
         # Robust 8
-        if level in [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]:
+        if level in [6, 7, 8, 9, 10, 11, 12, 13, 16, 16, 14, 15]:
             self._loadstuff_tv()
 
         # load detect shape
-        shape_thin = 0.001
-        idet1_size = [0.005, 0.001]
-        idet2_size = [0.001, 0.15]
+        idet1_size = [0.005, 0.02]
         idet1_visual = self.pyb.createVisualShape(
             self.pyb.GEOM_CYLINDER,
             length=idet1_size[1],
@@ -3337,19 +3312,15 @@ class yw_srw(yw_insf):
             height=idet1_size[1],
             radius=idet1_size[0])
 
-        # self.bullet_client.changeVisualShape(
-        #     idet1_visual,0,rgbaColor=[1,0,0,1]
-        # )
-
-        self.e.pos_insert_detect1 = case_xyz + idet1_shiftxyz
         self.e.insert_detect1 = self.bullet_client.createMultiBody(
             baseMass=0,
-            basePosition=self.pos_insert_detect1,
+            basePosition=self._hole_detector,
             baseOrientation=[0, 0, 0, 1],
             baseCollisionShapeIndex=idet1_colli,
             baseVisualShapeIndex=idet1_visual
         )
-        self.e.my_items["insert_detect"].append(self.insert_detect1)
+
+        self.e.my_items["insert_detect"].append(self.e.insert_detect1)
 
         # brighter insert detect
 
@@ -3364,10 +3335,14 @@ class yw_srw(yw_insf):
                                                flags=self.bullet_client.URDF_MAINTAIN_LINK_ORDER | self.bullet_client.URDF_MERGE_FIXED_LINKS
                                                ,useFixedBase=True)#,#startOrientation)
 
-        self.bullet_client.changeVisualShape(jacoobjs,-1,rgbaColor=[0,0,0,1])
+        self.pyb.changeVisualShape(
+            self.e.my_items["case"][0],0,rgbaColor=[0.8,0,0,1]
+        )
+
+        self.bullet_client.changeVisualShape(jacoobjs,-1,rgbaColor=[0,0,0,1])  # base
         self.bullet_client.changeVisualShape(jacoobjs,0,rgbaColor=[0,0,0,1])
         self.bullet_client.changeVisualShape(jacoobjs,1,rgbaColor=[0,0,0,1])
-        self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0.8,0.8,0.8,1])
+        self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0.8,0.8,0,1])  # end effect
 
         # self.bullet_client.changeVisualShape(jacoobjs,3,rgbaColor=[0,0,0,0])
         # self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0,0,0,0])
@@ -3378,6 +3353,61 @@ class yw_srw(yw_insf):
         # jacoobjs = self.bu
         self.e.RobotUid = jacoobjs
         self.e.my_items["robot"].append(self.RobotUid)
+
+        self.lines=[]
+        self.lines.append(self.create_box_body([0.001,0.001,1],[1,0,0,1])) #0
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,1,0,1])) #1
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,0,1,1])) #2
+        self.lines.append(self.create_box_body([0.001,0.001,1],[1,1,0,1])) #3
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,1,1,1])) #4
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,0,0,1])) #5
+
+        self._set_lines(self._hole_detector,2)
+
+        # max_reward_center=case_center+[0.0170, -0.0195,0]
+
+        # refference
+            # case_xyz = np.array([0.25, 0.3, -0.4])
+            # idet1_shiftxyz = np.array([0.06, 0.12, -0.01])
+            # idet1_shiftxyz = np.array([0.06, 0.12, -0.01])
+            # base_line=case_center+idet1_shiftxyz #self.env.pos_insert_detect1[:2]
+            # ret_jaco_base_2_base_line=[-0.093, -0.05 ]
+            # max_reward_line=[0.0170, -0.0195]
+
+    def _set_lines(self,pos,id,orn=(0,0,0,1)):
+        if len(pos)==2:
+            pos=list(pos)+[0]
+        self.pyb.resetBasePositionAndOrientation(self.lines[id],list(pos),orn)
+
+    def create_box_body(self, bsize, rgba,only_visual=True):
+        if self.env.line_debug_mode==False:
+            rgba=[0,0,0,0]
+        box_vis = self.pyb.createVisualShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize,
+            rgbaColor=rgba)
+        if only_visual:
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                # baseCollisionShapeIndex=box_col
+            )
+        else:
+            box_col = self.pyb.createCollisionShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize)
+
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                baseCollisionShapeIndex=box_col
+            )
+        return box1
+
     def reset(self):
         # reset some flags
         self.e.detect_coli_case = 0
@@ -3390,7 +3420,7 @@ class yw_srw(yw_insf):
             # noise_1[2]=0
             self.noise_0_from_reset = noise_0
             self.noise_1_from_reset = noise_1
-        elif level in [14,15]:
+        elif level in [14,15, 16]:
             max_translation = 0.01  # meter
             n1 = np.random.uniform(-max_translation, max_translation, [3])
             n2 = np.random.uniform(-max_translation, max_translation, [3])
@@ -3407,6 +3437,417 @@ class yw_srw(yw_insf):
 
         # for generate random seed
         self.reset_times+=1
+
+    def rt18_(self, level):
+        if level in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+            s = level / 10 * 0.6 + 0.4
+        elif level in [11, 12, 13, 16]:
+            s = 1  # 0.5
+        elif level in [14, 15]:
+            s = 1
+        else:
+            self._reset_jaco_pos()
+            return None
+        s = s * self.rtscale_18
+
+        # reset position
+        self._reset_jaco_pos()
+        base_new = self.env.JacoCart_BasePos
+        pose_noise = np.random.uniform(-1, 1, 3) * 0.02
+        pose_noise[2] = 0
+        base_new = np.array(base_new) + pose_noise * s  # +[0,0,0.1]
+        # print(base_new)
+        self.bullet_client.resetBasePositionAndOrientation(self.RobotUid, base_new,
+                                                           self.JacoCart_BaseOrn)
+    def _reward(self):
+        # print(self.steps)
+        ee_pose = np.array(list(self.get_end_effect_pose()))[:2]
+
+        self._set_lines(ee_pose, 0)
+
+        target_pos = np.array(self.env._pos_ee_max_reward[:2])
+
+        self._set_lines(target_pos, 1)
+        dist = np.linalg.norm(ee_pose - target_pos)
+        align_reward = np.clip(-80 * dist + 1, -1, 1)
+        reward = align_reward  # float(success) +
+        # if (success):
+        #     pass
+
+        if self._task_success():
+            print("success!")
+        return float(reward)
+    def rt7_(self,level):
+
+        # Robust 7
+        # if level in [13, 16]:
+        noise=np.random.uniform(-0.1,0.1,4)
+        noise[3]=noise[2]=0
+        c=[0.8,0.8,0,1]
+        c+=noise
+        self.bullet_client.changeVisualShape(self.my_items["robot"][0], 2, rgbaColor=c)
+
+        c=[0.8,0,0,1]
+        noise=np.random.uniform(-0.1,0.1,4)
+        noise[3]=noise[2]=noise[1]=0
+        c+=noise
+        self.pyb.changeVisualShape(
+            self.e.my_items["case"][0], 0, rgbaColor=c
+        )
+
+    def rt11_(self, l):
+        assert len(self.my_items["insert_detect"]) > 0
+        # insert detect color change
+        # if l ==1:
+
+        # if l in [11,12,13, 16,14,15]:
+        #     c = [0, 0, 0, 1]
+        #     # self.pyb.changeVisualShape(self.e.my_items["insert_detect"][0],-1,rgbaColor=[0,1,1,1])
+        # else:
+        c = [0.2, 0.2, 0.2, 1]
+        noise=np.random.uniform(-0.1,0.1,4)
+        noise[3]=0
+        c += noise
+        self.bullet_client.changeVisualShape(self.my_items["insert_detect"][0], -1, rgbaColor=c)
+
+
+#Task2.3: Fast Insert with segmented objects:
+class yw_inss(yw_srw):
+    def __init__(self,env,level):
+        pass
+        super(yw_inss, self).__init__(env,level)
+        self.env=env
+        self.env.line_debug_mode=False
+        # select task hole
+        self.env.hole_id=0
+        self.env._case_center=np.array([0.25, 0.3, -0.4])
+        self.env._maxreward_ee2hole=[0.0170, -0.0195,0]
+        self.env._jacobase2hole=[-0.093, -0.05 , -0.59 ]
+        self.env._hole_centers=[
+            self.env._case_center + np.array([0.06, 0.12, -0.01]),
+            self.env._case_center + np.array([-0.06, 0.12, -0.01]),
+            self.env._case_center + np.array([-0.095, 0, -0.01]),
+            self.env._case_center + np.array([-0.06, -0.125, -0.01]),
+            self.env._case_center + np.array([0.06, -0.125, -0.01]),
+            self.env._case_center + np.array([0.095, 0, -0.01]),
+            ]
+
+        self.env._hole_center=self.env._hole_centers[self.env.hole_id]
+        self.env._hole_detector=self.env._hole_center+[0,0,-0.005]
+        self.env._pos_ee_max_reward = self.env._hole_center + self.env._maxreward_ee2hole  # max end effector pos
+        self.env._pos_jaco_base_reset = self.env._hole_center + self.env._jacobase2hole
+        self.env.JacoCart_BasePos=self.env._pos_jaco_base_reset
+
+
+        self.boxes=[]
+        self.boxes.append(self.create_box([0.005,0.005,0.008],[1,0,0,1])) #0
+        # self.boxes.append(self.create_sylinder([0.0053,3],[1,0,0,1])) #0
+    def get_spaces(self):
+        observation_space = spaces.Box(-1,
+                                       1,
+                                       shape=(self.args.obs_shape,),
+                                       dtype='float32')
+        action_space = spaces.Box(self.args.action_low,
+                                  self.args.action_high,
+                                  shape=(self.args.action_len,),
+                                  dtype='float32')
+
+        return observation_space,action_space
+    def _set_box(self,pos,id,orn=(0,0,0,1)):
+        if len(pos)==2:
+            pos=list(pos)+[0]
+        self.pyb.resetBasePositionAndOrientation(self.boxes[id],list(pos),orn)
+
+
+    def create_sylinder(self, bsize, rgba,only_visual=True):
+
+        box_vis = self.pyb.createVisualShape(
+            self.pyb.GEOM_CYLINDER,
+            radius=bsize[0],
+            height=bsize[1],
+            rgbaColor=rgba)
+        if only_visual:
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                # baseCollisionShapeIndex=box_col
+            )
+        else:
+            box_col = self.pyb.createCollisionShape(
+            self.pyb.GEOM_CYLINDER,
+            radius=bsize[0],
+            height=bsize[1],)
+
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                baseCollisionShapeIndex=box_col
+            )
+        return box1
+
+    def create_box(self, bsize, rgba,only_visual=True):
+
+        box_vis = self.pyb.createVisualShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize,
+            rgbaColor=rgba)
+        if only_visual:
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                # baseCollisionShapeIndex=box_col
+            )
+        else:
+            box_col = self.pyb.createCollisionShape(
+            self.pyb.GEOM_BOX,
+            halfExtents=bsize,)
+
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                baseCollisionShapeIndex=box_col
+            )
+        return box1
+    def create_ball(self, bsize, rgba,only_visual=True):
+
+        box_vis = self.pyb.createVisualShape(
+            self.pyb.GEOM_SPHERE,
+            radius=bsize,
+            rgbaColor=rgba)
+        if only_visual:
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                # baseCollisionShapeIndex=box_col
+            )
+        else:
+            box_col = self.pyb.createCollisionShape(
+                self.pyb.GEOM_SPHERE,
+                radius=bsize,)
+
+            box1 = self.bullet_client.createMultiBody(
+                baseMass=0,
+                basePosition=[0, 0, 0],
+                baseOrientation=[0, 0, 0, 1],
+                baseVisualShapeIndex=box_vis,
+                baseCollisionShapeIndex=box_col
+            )
+        return box1
+
+
+    def rt11_(self, l):
+        assert len(self.my_items["insert_detect"]) > 0
+        c = [0, 1, 0, 1]
+        self.bullet_client.changeVisualShape(self.my_items["insert_detect"][0], -1, rgbaColor=c)
+    def rt7_(self,*args):
+        pass
+    def get_bolt_pose(self):
+        ee_pose = self.get_end_effect_pose_calibrated()
+        pos = list(ee_pose)
+        pos[2] += 0.45
+        pos[1] += 0.01
+        pos[0] -= 0.01
+        return pos  # state[4] is the worldLinkFramePosition
+    def get_bolt_tap_pose(self):
+        ee_pose = self.get_end_effect_pose_calibrated()
+        pos = list(ee_pose)
+        pos[2] += 0.365
+        pos[1] += 0.018
+        pos[0] += -0.016
+        return pos  # state[4] is the worldLinkFramePosition
+    def rt20_(self,*args):
+        pass
+    def _get_external_observe(self):
+
+        level = self.l
+        s = level / 10
+        level = 1
+        ee_pose, ee_orn = self.get_end_effect_pos_orn_calibrated()
+
+        # Robust 1 2
+        if (level in [4, 5, 6, 7, 8, 9, 10]):
+            mxyz = 0.02
+            mrpy = 0.02
+            s = level / 10
+            noise_0 = np.random.uniform(-s * mrpy, s * mrpy, [3])
+            noise_0[2] = 0  # Robust 1
+            noise_1 = np.random.uniform(-s * mrpy, s * mrpy, [3])
+            noise_1[2] = 0  # robust 1
+            noise_xyz_0 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
+            noise_xyz_1 = np.random.uniform(-s * mxyz, s * mxyz, [3])  # Robust 2
+        elif level in [1, 2, 3]:
+            noise_0 = self.noise_0_from_reset
+            noise_1 = self.noise_1_from_reset
+            noise_xyz_0 = np.array([0, 0, 0])
+            noise_xyz_1 = np.array([0, 0, 0])
+
+        # Robust 3
+        if (level in [4, 5, 6, 7, 8, 9, 10]):
+            mfov = (level - 3) / 2
+            fov_noise_1 = np.random.uniform(-mfov, mfov, 1)[0]
+            fov_noise_2 = np.random.uniform(-mfov, mfov, 1)[0]
+        elif level in [11, 12, 13, 16]:
+            mfov = 0.5
+            fov_noise_1 = np.random.uniform(-mfov, mfov, 1)[0]
+            fov_noise_2 = np.random.uniform(-mfov, mfov, 1)[0]
+        else:
+            fov_noise_1 = 0
+            fov_noise_2 = 0
+
+        self.rt7_(level)
+
+        # Robust 11
+        self.rt11_(level)
+
+        # Robust 20
+        self.rt20_(level)
+
+        #
+        self.rt21_(level)
+
+        # cam 1
+        bolt_tap_pos = self.get_bolt_pose()
+        get_bolt_tap_pose = self.get_bolt_tap_pose()
+        print(bolt_tap_pos)
+        self._set_box(get_bolt_tap_pose,0)
+
+
+        cam_pos1 = list(np.add(ee_pose, self.args.camera_shitft_xyz) + noise_xyz_0)
+        target_point = list(np.add(bolt_tap_pos, noise_0))
+        img0 = self.z_get_eye_img_bytargetpos(eye_pos=cam_pos1, target_pose=target_point,
+                                              fov=self.args.fov + fov_noise_1)
+
+        cam_pos2 = list(np.add(ee_pose, self.args.camera_shitft_xyz2) + noise_xyz_1)
+        # cam_pos2 = list(np.add(ee_pose,debug_xyz2) + noise_xyz_1)
+        target_point = list(np.add(bolt_tap_pos, noise_1))
+        img1 = self.z_get_eye_img_bytargetpos(eye_pos=cam_pos2, target_pose=target_point,
+                                              fov=self.args.fov2 + fov_noise_2)
+
+        # Robust 12 Robust 13
+        img0 = self.rt1213_(level, img0)
+        img1 = self.rt1213_(level, img1)
+
+        # Robust 22
+        img0 = self.rt22_(level, img0)
+        img1 = self.rt22_(level, img1)
+
+        # Robust 23
+        img0 = self.rt23_(level, img0)
+        img1 = self.rt23_(level, img1)
+
+        self.z_save_img(level, img0)
+        self.z_save_img(level, img1)
+
+        # cv2.im
+        cv2.imwrite("test.jpg",img0)
+        # img0[3:]=0
+        cat_img = self.z_fuse_img(img0, img1)
+        cat_img = np.transpose(cat_img, [2, 0, 1])
+        self.images[0] = cat_img
+        return self.images[0]
+
+    def init_load_items(self):
+        self.JacoCartEEIndex=2 #?
+        self.BoltBodyIndex=4 #?
+        self.JacoCart_BasePos=[0.217,0.37,-1]
+        self.JacoCart_BaseOrn=self.p.getQuaternionFromEuler([-1.57,1.57,0])
+        self.e.target_e_pose=[0.2,0.36,-1] # ?
+        self.e.target_e_orn=self.p.getQuaternionFromEuler([0,0,0]) # ?
+        self.JacoCart_reset_jp=[[0], [0], [0], [1.3], [1.3], [1.3]]
+
+        self.m.load_a_standard_table()
+
+        level = self.l
+        if level in [11, 12,14,15]:
+            self._init_GAN()
+        self.e.maxsteps = 32
+        self.e.images = [None, None]
+        try:
+            self.e.viewers = [rendering.SimpleImageViewer(), rendering.SimpleImageViewer()]
+        except:
+            pass
+
+        case_xyz = np.array([0.25, 0.3, -0.4])
+        idet1_shiftxyz = np.array([0.06, 0.12, -0.01])
+        self.e.case_xyz = case_xyz
+        self.e.idet1_shiftxyz = idet1_shiftxyz
+        case_urdf = os.path.join(self._get_model_rootdir(), "objects", "case_hole_detect.urdf")
+
+        self.e.my_items["case"].append(
+            self.bullet_client.loadURDF(
+            case_urdf,
+            case_xyz,
+            [0, 0, 1, 1],
+            flags=self.flags))
+
+        # load detect shape
+        idet1_size = [0.005, 0.001]
+        idet1_visual = self.pyb.createVisualShape(
+            self.pyb.GEOM_CYLINDER,
+            length=idet1_size[1],
+            radius=idet1_size[0],
+            rgbaColor=[1, 0.1, 0.1, 1])
+        idet1_colli = self.pyb.createCollisionShape(
+            self.pyb.GEOM_CYLINDER,
+            height=idet1_size[1],
+            radius=idet1_size[0])
+
+        self.e.insert_detect1 = self.bullet_client.createMultiBody(
+            baseMass=0,
+            basePosition=self._hole_detector,
+            baseOrientation=[0, 0, 0, 1],
+            baseCollisionShapeIndex=idet1_colli,
+            baseVisualShapeIndex=idet1_visual
+        )
+
+        self.e.my_items["insert_detect"].append(self.e.insert_detect1)
+
+        jaco_urdf = os.path.join(self._get_model_rootdir(),
+                                 'jaco_description',
+                                 'urdf',
+                                 "jaco_cartesian.urdf")
+        jacoobjs = self.bullet_client.loadURDF(jaco_urdf,
+                                               self.JacoCart_BasePos,#startPos,
+                                               self.JacoCart_BaseOrn,
+                                               flags=self.bullet_client.URDF_MAINTAIN_LINK_ORDER | self.bullet_client.URDF_MERGE_FIXED_LINKS
+                                               ,useFixedBase=True)#,#startOrientation)
+
+        self.pyb.changeVisualShape(
+            self.e.my_items["case"][0],0,rgbaColor=[0,0,0,0]
+        )
+
+        self.bullet_client.changeVisualShape(jacoobjs,-1,rgbaColor=[0,0,0,1])  # base
+        self.bullet_client.changeVisualShape(jacoobjs,0,rgbaColor=[0,0,0,1])
+        self.bullet_client.changeVisualShape(jacoobjs,1,rgbaColor=[0,0,0,1])
+        self.bullet_client.changeVisualShape(jacoobjs,2,rgbaColor=[0,0,0,1])  # end effect
+        self.bullet_client.changeVisualShape(jacoobjs,3,rgbaColor=[0,0,0,0])  # fgs
+        self.bullet_client.changeVisualShape(jacoobjs,4,rgbaColor=[0,0,0,0])  # fgs
+        self.bullet_client.changeVisualShape(jacoobjs,5,rgbaColor=[0,0,0,0])  # fgs
+
+        # jacoobjs = self.bu
+        self.e.RobotUid = jacoobjs
+        self.e.my_items["robot"].append(self.RobotUid)
+
+        self.lines=[]
+        self.lines.append(self.create_box_body([0.001,0.001,1],[1,0,0,1])) #0
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,1,0,1])) #1
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,0,1,1])) #2
+        self.lines.append(self.create_box_body([0.001,0.001,1],[1,1,0,1])) #3
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,1,1,1])) #4
+        self.lines.append(self.create_box_body([0.001,0.001,1],[0,0,0,1])) #5
+
+        self._set_lines(self._hole_detector,2)
+
 
 #Task3: Sparse Reward Envs
 # 3.1 2d sparse insert

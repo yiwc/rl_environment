@@ -748,7 +748,7 @@
   <link name="bolt">
     <visual>
         <geometry>
-            <cylinder radius="0.015" length="0.11"/>
+            <cylinder radius="0.014" length="0.11"/>
         </geometry>
         <material name="bolt">
           <color rgba="0.8 0.8 0.8 1"/>
