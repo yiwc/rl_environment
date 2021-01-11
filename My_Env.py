@@ -261,7 +261,7 @@ if __name__=="__main__":
         action=env1.action_space.sample()
         action=[0,0]
         obs, rew, done, info=env1.step(action)
-
+        # print(len(obs))
         ret+=rew
         if(done):
             print("ret=",ret," || avret=",ret/loop)

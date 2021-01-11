@@ -3837,7 +3837,7 @@ class yw_inss(yw_srw):
         # , c_green_cam1, c_red_cam1
 
         imgmaxs=img0.shape[0]
-        observe=[
+        detect_observe=[
             center_green_cam0[0],#x, from left to rgiht
             center_green_cam0[1],#y, from top to bottom
             center_red_cam0[0],
@@ -3847,11 +3847,13 @@ class yw_inss(yw_srw):
             center_red_cam1[0],
             center_red_cam1[1],
         ]
-        observe=list(map(lambda x:float(x)*2/imgmaxs-1,observe))
+        detect_observe=list(map(lambda x:float(x)*2/imgmaxs-1,detect_observe))
         confidence=[c_green_cam0,c_red_cam0,c_green_cam1,c_red_cam1] #0 -> 100%
         confidence=list(map(lambda x:float(x)*2-1,confidence))
 
-        all_observes=observe+confidence
+        all_observes=detect_observe[:4]+confidence[:2]+detect_observe[4:]+confidence[2:]
+
+        # all_observes=observe+detect_observe
 
         img0 = cv2.circle(img0, tuple(map(lambda x: int(x), center_green_cam0)), 3, (0, 255, 255), -1)
         img0 = cv2.circle(img0, tuple(map(lambda x: int(x), center_red_cam0)), 3, (0, 255, 255), -1)
