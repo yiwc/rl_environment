@@ -1,3 +1,13 @@
+import sys
+try:
+    rospth1='/opt/ros/kinetic/lib/python2.7/dist-packages'
+    rospth2='/home/radoe-1/movo_ws/devel/lib/python2.7/dist-packages'
+    # # rospth='/opt/ros/kinetic/lib/python2.7/dist-packages'
+    # if rospth in sys.path:
+    sys.path.remove(rospth1)
+    sys.path.remove(rospth2)
+except:
+    pass
 import pybullet as p
 import pybullet_data as pd
 import math
@@ -76,9 +86,10 @@ class yw_robotics_env(gym.Env):
         for i in yaml_name_dict:
             if i in task:
                 yaml_name=i
+        if yaml_name=="alpoderl2_fixcam":
+            yaml_name="alpoderl2"
 
-        # yaml_name="yw_insd" if "yw_insd" in task else task
-        # yaml_name="yw_insf" if "yw_insf" in task else task
+
         yaml_f=os.path.join(base_dir, "configs/"+yaml_name+".yaml")
         if os.path.isfile(yaml_f):
             self.args = yaml.load(open(yaml_f, 'r'), yaml.Loader)
@@ -249,29 +260,28 @@ if __name__=="__main__":
     # saver=img_save(10000)
     # env1 = yw_robotics_env("yw_insert_v1img3cm", DIRECT=0)
 
-    taskname="yw_inss_v9"
+    taskname="alpoderl2_fixcam"
+    taskname="alpoderl2"
     env1 = yw_robotics_env(taskname, DIRECT=0, gan_srvs=1, gan_dgx=True, gan_port=5660)
-
     loop=0
-    # action=[0,0]
     ret=0
     while(True):
         loop+=1
         print(loop)
         action=env1.action_space.sample()
-        action=[0,0]
+        # action=[0,0]
+
         obs, rew, done, info=env1.step(action)
-        # print(len(obs))
+        print((obs))
         ret+=rew
+        # print("ret=",ret)
+        print("rew=",rew)
         if(done):
             print("ret=",ret," || avret=",ret/loop)
             ret=0
             looo=0
-        if(rew>1):
-            print("success")
         if(done):
             print("Finished!")
-
         env1.render()
 
 # Exp Recording Scripts

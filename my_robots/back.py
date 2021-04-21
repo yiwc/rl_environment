@@ -752,8 +752,6 @@ class PandaSim(object):
                 pass
             else:
                 img=self.images[camera_index].transpose([1,2,0])
-                # print(os.getcwd())
-                cv2.imwrite("saveimgs/MSPA/"+str(time.time())+".png",img)
                 self.viewers[camera_index].imshow(img)
         except:
             pass
@@ -4902,7 +4900,7 @@ class alpoderl2_nodemo(alpoderl2):
         self.images[0] = cat_img
 
 
-        # print("final observe=>",final_observe[[3,4,7,8],:])
+        print("final observe=>",final_observe[[3,4,7,8],:])
         return final_observe[[3,4,7,8],:]
 
 

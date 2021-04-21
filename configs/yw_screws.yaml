@@ -5,14 +5,17 @@ single_img_size: [128, 128]
 #obs_shape: [128,256]
 
 # camera 1
-fov: 13
-camera_shitft_xyz: [0.015,0.09,0.09] # red green blue
-#camera_shift_rpy: [0,2,3] # _ pitch _
+fov: 33
+#camera_shitft_xyz: [0.015,0.09,0.09] # red green blue
+#camera_shitft_xyz: [-0.09,0.08,0.09] # red green blue
+camera_shitft_xyz: [-0.10,0.035,-0.2] # red green blue
+#[y,x]
 
 # camera 2
-fov2: 13
-camera_shitft_xyz2: [-0.055,0.09,0.09]
-#camera_shift_rpy_2: [0,2,2.7]
+fov2: 33
+#camera_shitft_xyz2: [-0.055,0.09,0.09]
+#camera_shitft_xyz2: [-0.09,0.01,0.09]
+camera_shitft_xyz2: [-0.10,-0.035,-0.2]
 
 # Motion
 z_default_vel: 0.03 # 0.02

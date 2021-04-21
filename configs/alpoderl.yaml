@@ -5,23 +5,26 @@ single_img_size: [128, 128]
 #obs_shape: [128,256]
 
 # camera 1
-fov: 13
+fov: 32
 camera_shitft_xyz: [0.015,0.09,0.09] # red green blue
 #camera_shift_rpy: [0,2,3] # _ pitch _
 
 # camera 2
-fov2: 13
+fov2: 32
 camera_shitft_xyz2: [-0.055,0.09,0.09]
 #camera_shift_rpy_2: [0,2,2.7]
 
 # Motion
-z_default_vel: 0.03 # 0.02
+z_default_vel: 0.0 # 0.02
 action_default_vel_scale: 1 #
 
 # Done
 casecoli_done: 15 # Done after already colids case x steps
 
-obs_shape: 4
+obs_shape: 2
+obs_low: -3.1416
+obs_high: +3.1416
+
 action_low: -1
 action_high: 1
 action_len: 2
